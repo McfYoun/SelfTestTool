@@ -12,6 +12,7 @@
 		E0930C171E690BC000A1B9D3 /* ViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = E0930C161E690BC000A1B9D3 /* ViewController.m */; };
 		E0930C191E690BC000A1B9D3 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = E0930C181E690BC000A1B9D3 /* Assets.xcassets */; };
 		E0930C1C1E690BC000A1B9D3 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = E0930C1A1E690BC000A1B9D3 /* Main.storyboard */; };
+		E0930C291E690DDD00A1B9D3 /* Socket.m in Sources */ = {isa = PBXBuildFile; fileRef = E0930C281E690DDD00A1B9D3 /* Socket.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -24,6 +25,8 @@
 		E0930C181E690BC000A1B9D3 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		E0930C1B1E690BC000A1B9D3 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
 		E0930C1D1E690BC000A1B9D3 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		E0930C271E690DDD00A1B9D3 /* Socket.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Socket.h; sourceTree = "<group>"; };
+		E0930C281E690DDD00A1B9D3 /* Socket.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Socket.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -60,6 +63,8 @@
 				E0930C101E690BC000A1B9D3 /* AppDelegate.m */,
 				E0930C151E690BC000A1B9D3 /* ViewController.h */,
 				E0930C161E690BC000A1B9D3 /* ViewController.m */,
+				E0930C271E690DDD00A1B9D3 /* Socket.h */,
+				E0930C281E690DDD00A1B9D3 /* Socket.m */,
 				E0930C181E690BC000A1B9D3 /* Assets.xcassets */,
 				E0930C1A1E690BC000A1B9D3 /* Main.storyboard */,
 				E0930C1D1E690BC000A1B9D3 /* Info.plist */,
@@ -147,6 +152,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				E0930C291E690DDD00A1B9D3 /* Socket.m in Sources */,
 				E0930C171E690BC000A1B9D3 /* ViewController.m in Sources */,
 				E0930C141E690BC000A1B9D3 /* main.m in Sources */,
 				E0930C111E690BC000A1B9D3 /* AppDelegate.m in Sources */,
@@ -264,6 +270,10 @@
 				DEVELOPMENT_TEAM = 7G7CT35948;
 				INFOPLIST_FILE = "TCP_IP debug/Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks";
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)/TCP_IP\\ debug",
+				);
 				PRODUCT_BUNDLE_IDENTIFIER = "B-P.TCP-IP-debug";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
@@ -277,6 +287,10 @@
 				DEVELOPMENT_TEAM = 7G7CT35948;
 				INFOPLIST_FILE = "TCP_IP debug/Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks";
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)/TCP_IP\\ debug",
+				);
 				PRODUCT_BUNDLE_IDENTIFIER = "B-P.TCP-IP-debug";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
