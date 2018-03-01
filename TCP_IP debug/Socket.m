@@ -18,6 +18,62 @@
 #pragma mark--Connect Instructions By Ethernet
 -(BOOL)ConnectSocketIP:(NSString *)IP andPort:(int)port;
 {
+    if (port == 4502) {
+        struct protoent *ppe;
+        ppe=getprotobyname("tcp");
+        listenSocket=socket(AF_INET,SOCK_STREAM,ppe->p_proto);  ///----obtain  the socket handle .
+        NSLog(@"Ethernet socket listenSocket=%d",listenSocket);
+        NSString *uiInfo = @"Fail,";
+        if (listenSocket==-1) //---obtain socket handle fail
+        {
+            uiInfo = @"Fail, obtain socket handle fail, listenSocket=";
+            NSString *tmp = [NSString stringWithFormat:@"%d",listenSocket];
+            uiInfo = [uiInfo stringByAppendingString:tmp];
+            
+            return false;
+        }
+        
+        //    NSString *strIP=@"169.254.4.10";
+        NSString *strIP=IP;
+        int iPortID =port;
+        //int iPortID = [[ScriptParse getValueFromSummary:@"EthernetPort"] intValue];
+        
+        struct sockaddr_in daddr;
+        memset((void *)&daddr,0,sizeof(daddr));
+        daddr.sin_family=AF_INET;
+        daddr.sin_port=htons(iPortID);   ////convert port
+        daddr.sin_addr.s_addr=inet_addr([strIP cStringUsingEncoding:NSASCIIStringEncoding]) ; ///connect address
+        int err ;
+        err = connect(listenSocket,(struct sockaddr *)&daddr,sizeof(daddr)) ;
+        ///....................................................
+        NSLog(@"Ethernet connect err=%d",err);
+        if (err!=0) ///connected fail .
+        {
+            //NSString *tmp = [NSString stringWithFormat:@"%d",err];
+            return false;
+        }
+        else
+        {
+            
+            //==configure port===============//
+            //        int iTimeOut = 5000 ;
+            
+            //            fcntl(listenSocket, F_SETFL,O_NONBLOCK);//set nonblock enable
+            struct timeval timeout={2,0};
+            int ret = setsockopt(listenSocket,SOL_SOCKET,SO_RCVTIMEO,(const char*)&timeout,sizeof(timeout)) ;
+            if (ret != 0) {
+                NSLog(@"set Rcv timeout fail");
+            }
+            ret = setsockopt(listenSocket,SOL_SOCKET,SO_SNDTIMEO,(const char*)&timeout,sizeof(timeout)) ;
+            if (ret != 0) {
+                NSLog(@"set SND timeout fail");
+            }
+            int iAddr = 1 ;
+            setsockopt(listenSocket,SOL_SOCKET,SO_REUSEADDR,(char*)&iAddr,sizeof(int)) ;
+        }
+        
+        return true;
+    }
     struct protoent *ppe;
     ppe=getprotobyname("tcp");
     listenSocket=socket(AF_INET,SOCK_STREAM,ppe->p_proto);  ///----obtain  the socket handle .
@@ -55,16 +111,75 @@
     {
         
         //==configure port===============//
-        int iTimeOut = 5000 ;
-        setsockopt(listenSocket,IPPROTO_TCP,SO_RCVTIMEO,(char*)&iTimeOut,sizeof(int)) ;
-        setsockopt(listenSocket,IPPROTO_TCP,SO_SNDTIMEO,(char*)&iTimeOut,sizeof(int)) ;
+        //        int iTimeOut = 5000 ;
+        
+        //        fcntl(listenSocket, F_SETFL,O_NONBLOCK);//set nonblock enable
+        struct timeval timeout={3,0};
+        int ret = setsockopt(listenSocket,SOL_SOCKET,SO_RCVTIMEO,(const char*)&timeout,sizeof(timeout)) ;
+        if (ret != 0) {
+            NSLog(@"set Rcv timeout fail");
+        }
+        ret = setsockopt(listenSocket,SOL_SOCKET,SO_SNDTIMEO,(const char*)&timeout,sizeof(timeout)) ;
+        if (ret != 0) {
+            NSLog(@"set SND timeout fail");
+        }
         int iAddr = 1 ;
         setsockopt(listenSocket,SOL_SOCKET,SO_REUSEADDR,(char*)&iAddr,sizeof(int)) ;
     }
-    
-    
     return true;
+}
+
+-(BOOL)ConnectSocketIPUDP:(NSString *)IP andPort:(int)port;
+{
+  
+    struct protoent *ppe;
+    ppe=getprotobyname("udp");
+    listenSocket=socket(AF_INET,SOCK_DGRAM,ppe->p_proto);  ///----obtain  the socket handle .
+    NSLog(@"Ethernet socket listenSocket=%d",listenSocket);
+    NSString *uiInfo = @"Fail,";
+    if (listenSocket==-1) //---obtain socket handle fail
+    {
+        uiInfo = @"Fail, obtain socket handle fail, listenSocket=";
+        NSString *tmp = [NSString stringWithFormat:@"%d",listenSocket];
+        uiInfo = [uiInfo stringByAppendingString:tmp];
+        
+        return false;
+    }
     
+    //    NSString *strIP=@"169.254.4.10";
+    NSString *strIP=IP;
+    int iPortID =port;
+    //int iPortID = [[ScriptParse getValueFromSummary:@"EthernetPort"] intValue];
+    
+    struct sockaddr_in daddr;
+    memset((void *)&daddr,0,sizeof(daddr));
+    daddr.sin_family=AF_INET;
+    daddr.sin_port=htons(iPortID);   ////convert port
+    daddr.sin_addr.s_addr=inet_addr([strIP cStringUsingEncoding:NSASCIIStringEncoding]) ; ///connect address
+    int err ;
+    err = connect(listenSocket,(struct sockaddr *)&daddr,sizeof(daddr)) ;
+    ///....................................................
+    NSLog(@"Ethernet connect err=%d",err);
+    if (err!=0) ///connected fail .
+    {
+        //NSString *tmp = [NSString stringWithFormat:@"%d",err];
+        return false;
+    }
+    else
+    {
+        struct timeval timeout={3,0};
+        int ret = setsockopt(listenSocket,SOL_SOCKET,SO_RCVTIMEO,(const char*)&timeout,sizeof(timeout)) ;
+        if (ret != 0) {
+            NSLog(@"set Rcv timeout fail");
+        }
+        ret = setsockopt(listenSocket,SOL_SOCKET,SO_SNDTIMEO,(const char*)&timeout,sizeof(timeout)) ;
+        if (ret != 0) {
+            NSLog(@"set SND timeout fail");
+        }
+        int iAddr = 1 ;
+        setsockopt(listenSocket,SOL_SOCKET,SO_REUSEADDR,(char*)&iAddr,sizeof(int)) ;
+    }
+    return true;
 }
 
 -(BOOL)DisconnectBySocket;
@@ -84,13 +199,14 @@
 -(BOOL)WriteCMDBySocket:(NSString *)cmd;
 {
     
-
+    [self clearSocketBuffer];
     
-    NSString *cmdtr = [NSString stringWithFormat:@"%@\r" ,cmd];
+    NSString *cmdtr = [NSString stringWithFormat:@"%@\r\n" ,cmd];
     //[NSThread sleepForTimeInterval:0.01];
+    NSLog(@"write cmd:%@",cmdtr);
     BOOL wCMD=[self WriteInstructionBySocket:cmdtr];
     
-
+    
     //strcpy(stringinput,[aa UTF8String]);
     if (wCMD) {
         NSLog(@"Pass");
@@ -122,6 +238,7 @@
     if (cData == nil || listenSocket <= 0) {
         return false;
     }
+    
     wordsWritten = send(listenSocket,cData,sendLen,0) ;
     //NSLog(@"Ethernet send return len=%d \n",wordsWritten);
     
@@ -141,7 +258,7 @@
 
 -(NSString *)ReadstrBySocket;
 {
-
+    
     NSString *subString = [self ReadBySocket];
     if (subString == nil) {
         NSLog(@"recieve nothing");
@@ -151,7 +268,8 @@
 }
 -(NSString *)ReadBySocket;
 {
-    NSString *bufferString = [[NSString alloc]init];
+    NSString *bufferString = @"";
+    
     do {
         long wordsRead = 0;
         char tempRecBuffer[256] ;
@@ -159,7 +277,7 @@
         wordsRead = recv(listenSocket,tempRecBuffer,255,0) ; //received socket data
         if (wordsRead <= 0) //read available data
         {
-            NSLog(@"[CMD no Received]");
+            NSLog(@"no data to recv");
             break;
         }
         
@@ -178,11 +296,22 @@
     
 }
 
-
+-(void)clearSocketBuffer;
+{
+    if(listenSocket <= 0) {
+        return;
+    }
+    long wordsRead = 0;
+    do {
+        char tempRecBuffer[256] ;
+        memset(tempRecBuffer, 0, 256);
+        wordsRead = recv(listenSocket,tempRecBuffer,255,0);
+    } while (wordsRead > 0);
+}
 -(void)ReadFeedBackBySocket:(NSDictionary *)context;
 {
     //sleep(1);
-
+    
     NSString *min = [context objectForKey:@"MinValue"];
     NSString *max = [context objectForKey:@"MaxValue"];
     NSString *expectStr = [context objectForKey:@"ExpectStr"];
@@ -224,7 +353,7 @@
         
         NSLog(@"fail with string:%@",subString);
     }
-
+    
     
 }
 -(NSString *)ReadInstructionBySocket:(NSString *)strExpect;

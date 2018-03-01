@@ -10,13 +10,12 @@
 
 @interface Socket : NSObject
 {
-    
     @public
     int listenSocket;
-    
 }
 
 -(BOOL)ConnectSocketIP:(NSString *)IP andPort:(int)port;
+-(BOOL)ConnectSocketIPUDP:(NSString *)IP andPort:(int)port;
 -(BOOL)DisconnectBySocket;
 -(BOOL)WriteCMDBySocket:(NSString *)cmd;
 -(BOOL)WriteInstructionBySocket:(NSString *)cmd;
@@ -24,4 +23,5 @@
 -(NSString *)ReadBySocket;
 -(void)ReadFeedBackBySocket:(NSDictionary *)context;
 -(NSString *)ReadInstructionBySocket:(NSString *)strExpect;
+-(void)clearSocketBuffer;
 @end

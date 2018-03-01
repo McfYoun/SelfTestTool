@@ -14,7 +14,8 @@
     [super viewDidLoad];
     self->socket = [[Socket alloc]init];
     self->socket->listenSocket = -1;
-
+    [self->cmdCombox setDelegate:self];
+    [self->cmdCombox setDataSource:self];
     // Do any additional setup after loading the view.
 }
 
@@ -26,21 +27,21 @@
 }
 -(IBAction)SendCmd:(id)sender;
 {
-    NSString *cmdstr = [self->cmd stringValue];
+    NSString *cmdstr = [self->cmdCombox stringValue];
     if (didConnectionOK == true) {
-        
+//        [self->socket clearSocketBuffer];
         if([self->socket WriteCMDBySocket:cmdstr] == true){
-            [NSThread sleepForTimeInterval:0.2];
+//            [NSThread sleepForTimeInterval:0.2];
             NSString *feedbackStr = [self->socket ReadstrBySocket];
             [self logInfo:[NSString stringWithFormat:@"%@",feedbackStr]];
         }
         else{
             
-            [self logInfo:[NSString stringWithFormat:@"write commad:%@ fail !",cmdstr]];
+            [self logError:[NSString stringWithFormat:@"write commad:%@ fail !",cmdstr]];
         }
     }else
     {
-         [self logInfo:[NSString stringWithFormat:@"socket connection fail !"]];
+         [self logError:[NSString stringWithFormat:@"socket connection fail !"]];
         
     }
     
@@ -58,7 +59,7 @@
     }else
     {
         didConnectionOK = false;
-        [self logInfo:[NSString stringWithFormat:@"Connection with %@:%d fail",ip,port]];
+        [self logError:[NSString stringWithFormat:@"Connection with %@:%d fail",ip,port]];
     }
 }
 
@@ -76,6 +77,37 @@
         [self logInfo:@"Don't have the socket,don't need to disconnect"];
     }
 }
+
+- (IBAction)MCU_RESET:(id)sender {
+    
+    NSString *ip = [self->IPAddress stringValue];
+    int port = 28888;
+    //CMD:  CNVT_RESET_MCU
+    if ([self->socket ConnectSocketIPUDP:ip andPort:port] == true){
+        didConnectionOK = true;
+        [self logInfo:[NSString stringWithFormat:@"Connection with %@:%d OK",ip,port]];
+    }else
+    {
+        didConnectionOK = false;
+        [self logError:[NSString stringWithFormat:@"Connection with %@:%d fail",ip,port]];
+    }
+    NSString *cmdstr = @"CNVT_RESET_MCU";
+    if (didConnectionOK == true) {
+        //        [self->socket clearSocketBuffer];
+        if([self->socket WriteCMDBySocket:cmdstr] == true){
+            NSString *feedbackStr = [self->socket ReadstrBySocket];
+            [self logInfo:[NSString stringWithFormat:@"%@",feedbackStr]];
+        }
+        else{
+            
+            [self logError:[NSString stringWithFormat:@"write commad:%@ fail !",cmdstr]];
+        }
+    }else
+    {
+        [self logError:[NSString stringWithFormat:@"socket connection fail !"]];
+    }
+}
+
 #pragma mark - Log method -
 - (void)logInfo:(NSString *)msg
 {
@@ -83,6 +115,18 @@
     
     NSMutableDictionary *attributes = [NSMutableDictionary dictionaryWithCapacity:1];
     [attributes setObject:[NSColor blackColor] forKey:NSForegroundColorAttributeName];
+    
+    NSAttributedString *as = [[NSAttributedString alloc] initWithString:paragraph attributes:attributes];
+    
+    [[LogView textStorage] appendAttributedString:as];
+    [self scrollToBottom];
+}
+- (void)logError:(NSString *)msg
+{
+    NSString *paragraph = [NSString stringWithFormat:@"> %@\n", msg];
+    
+    NSMutableDictionary *attributes = [NSMutableDictionary dictionaryWithCapacity:1];
+    [attributes setObject:[NSColor redColor] forKey:NSForegroundColorAttributeName];
     
     NSAttributedString *as = [[NSAttributedString alloc] initWithString:paragraph attributes:attributes];
     
@@ -101,4 +145,47 @@
     
     [[scrollView documentView] scrollPoint:newScrollOrigin];
 }
+-(NSDictionary *)commandListArray
+{
+    if (!_commandListArray) {
+        NSString *path = [[NSBundle mainBundle] pathForResource:@"commandList" ofType:@"plist"];
+        _commandListArray = [NSDictionary dictionaryWithContentsOfFile:path];
+        
+    }
+    
+    return _commandListArray;
+}
+
+
+#pragma mark -  comboBox delegate -
+-(void)controlTextDidChange:(NSNotification *)obj
+{
+    id object = [obj object];
+    [object setCompletes:YES];
+    
+}
+#pragma mark -  comboBox dataSource -
+-(NSInteger)numberOfItemsInComboBox:(NSComboBox *)comboBox
+{
+    NSString *categoryString = category.selectedItem.title;
+    NSArray *cateCmdArray = [self.commandListArray objectForKey:categoryString];
+    return cateCmdArray.count;
+    
+}
+- (id)comboBox:(NSComboBox *)aComboBox objectValueForItemAtIndex:(NSInteger)index
+{
+    NSString *categoryString = category.selectedItem.title;
+    NSArray *cateCmdArray = [self.commandListArray objectForKey:categoryString];
+    return cateCmdArray[index];
+    
+    
+}
+- (NSUInteger)comboBox:(NSComboBox *)aComboBox indexOfItemWithStringValue:(NSString *)string
+{
+    NSString *categoryString = category.selectedItem.title;
+    NSArray *cateCmdArray = [self.commandListArray objectForKey:categoryString];
+    return [cateCmdArray indexOfObject:string];
+    
+}
+
 @end
