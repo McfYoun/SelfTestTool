@@ -43,7 +43,6 @@
          [self logError:[NSString stringWithFormat:@"socket connection fail !"]];
         
     }
-    
 }
 
 //SET_IP_ADDR 10.0.100.11$
@@ -65,11 +64,196 @@
     }
 }
 - (IBAction)SETIPBTN:(id)sender {
-    _SetIPTextField.stringValue;
+    NSString * FInalIP = _SetIPTextField.stringValue;
+    
+    NSString * ipCmd = [NSString stringWithFormat:@"SET_IP_ADDR 10.0.100.%@$",FInalIP];
+    if (FInalIP.length != 2) {
+        [self logError:[NSString stringWithFormat:@"write commad:%@ fail ! \n should import 11 or 21 or 31 or 41",ipCmd]];
+    }
+    
+    if (didConnectionOK == true) {
+        //[self->socket clearSocketBuffer];
+        if([self->socket WriteCMDBySocket:ipCmd] == true){
+            NSString *feedbackStr = [self->socket ReadstrBySocket];
+            [self logInfo:[NSString stringWithFormat:@"%@",feedbackStr]];
+        }
+        else{
+            
+            [self logError:[NSString stringWithFormat:@"write commad:%@ fail !",cmd]];
+        }
+    }else
+    {
+        [self logError:[NSString stringWithFormat:@"socket connection fail !"]];
+        
+    }
 }
 
 - (IBAction)YieldBTN:(id)sender {
+    NSString * finalString = [[NSString alloc] initWithFormat:@"find /vault/Atlas/Units/Archive -mtime -%@ | grep tgz",_YieldTextField.stringValue];
+    [self ActionTheCommand:finalString];
+}
+
+- (void)ActionTheCommand:(NSString *)finalString
+{
+    // 创建
+    NSThread *thread = [[NSThread alloc] initWithTarget:self selector:@selector(ConnectTerminal:) object:finalString];
+    // 启动
+    [thread start];
+    return;
+}
+
+- (void)ConnectTerminal:(NSString *)FFinalString
+{
+    NSTask *task;
+    task = [[NSTask alloc] init];
     
+    [task setLaunchPath: @"/bin/sh"];
+    
+    NSArray *arguments;
+    arguments = [NSArray arrayWithObjects:@"-c",FFinalString,nil];
+    [task setArguments: arguments];
+    NSPipe *pipe;
+    pipe = [NSPipe pipe];
+    [task setStandardOutput: pipe];
+    
+    NSFileHandle *file;
+    file = [pipe fileHandleForReading];
+    
+    [task launch];
+    
+    NSData *data;
+    data = [file readDataToEndOfFile];
+    
+    NSString *string;
+    string = [[NSString alloc] initWithData: data
+                                   encoding: NSUTF8StringEncoding];
+    //    NSLog (@"got\n%@", string);
+    [self analyseString:string];
+    //    [[NSRunLoop currentRunLoop] run];
+}
+
+- (void)analyseString:(NSString *)resultStr
+{
+    if (!resultStr) {
+        return;
+    }
+    NSArray * resultArr = [resultStr componentsSeparatedByString:@"\n"];
+    
+    NSMutableArray * slot1Arr = [[NSMutableArray alloc] init];
+    NSMutableArray * slot2Arr = [[NSMutableArray alloc] init];
+    NSMutableArray * slot3Arr = [[NSMutableArray alloc] init];
+    NSMutableArray * slot4Arr = [[NSMutableArray alloc] init];
+    
+    NSString * totalresult = [[NSString alloc] init];
+    NSString * slot1result = [[NSString alloc] init];
+    NSString * slot2result = [[NSString alloc] init];
+    NSString * slot3result = [[NSString alloc] init];
+    NSString * slot4result = [[NSString alloc] init];
+    
+    float passCount = 0;
+    
+    for (NSString * totalcountstr in resultArr) {
+        if ([totalcountstr containsString:@"Pass"]) {
+            passCount ++;
+        }
+    }
+    
+//    dispatch_async(dispatch_get_main_queue(), ^{
+//        [self logInfo:@"NA"];
+//    });
+    
+    
+    totalresult = [[NSString alloc] initWithFormat:@"total,input_%lu,Pass_%ld,Yield_%0.2f",resultArr.count - 1,(long)passCount,passCount/(resultArr.count - 1)];
+    
+    dispatch_async(dispatch_get_main_queue(), ^{
+        [self logInfo:totalresult];
+    });
+    
+    passCount = 0;
+    
+    for (NSString * str in resultArr) {
+        if ([str containsString:@"Slot-1"]) {
+            [slot1Arr addObject:str];
+        }
+        if ([str containsString:@"Slot-2"]) {
+            [slot2Arr addObject:str];
+        }
+        if ([str containsString:@"Slot-3"]) {
+            [slot3Arr addObject:str];
+        }
+        if ([str containsString:@"Slot-4"]) {
+            [slot4Arr addObject:str];
+        }
+    }
+    
+    
+//    dispatch_async(dispatch_get_main_queue(), ^{
+//        [self logInfo:totalresult];
+//    });
+    
+    
+    if (slot1Arr.count > 0) {
+        for (NSString * slotstr in slot1Arr) {
+            if ([slotstr containsString:@"Passed"]) {
+                passCount ++;
+            }
+        }
+        slot1result = [NSString stringWithFormat:@"slot1,input_%lu,Pass_%ld,Yield_%0.2f",(unsigned long)slot1Arr.count,(long)passCount,passCount/slot1Arr.count];
+        dispatch_async(dispatch_get_main_queue(), ^{
+            [self logInfo:slot1result];
+        });
+    }
+    
+    
+    passCount = 0;
+//    dispatch_async(dispatch_get_main_queue(), ^{
+//        [_slot2Result setStringValue:@"NA"];
+//    });
+    if (slot2Arr.count > 0) {
+        for (NSString * slotstr in slot2Arr) {
+            if ([slotstr containsString:@"Passed"]) {
+                passCount ++;
+            }
+        }
+        slot2result = [NSString stringWithFormat:@"slot2,input_%lu,Pass_%ld,Yield_%0.2f",(unsigned long)slot2Arr.count,(long)passCount,passCount/slot2Arr.count];
+        dispatch_async(dispatch_get_main_queue(), ^{
+            [self logInfo:slot2result];
+        });
+        
+    }
+    
+    passCount = 0;
+//    dispatch_async(dispatch_get_main_queue(), ^{
+//        [_slot3Result setStringValue:@"NA"];
+//    });
+    if (slot3Arr.count > 0) {
+        for (NSString * slotstr in slot3Arr) {
+            if ([slotstr containsString:@"Passed"]) {
+                passCount ++;
+            }
+        }
+        slot3result = [NSString stringWithFormat:@"slot3,input_%lu,Pass_%ld,Yield_%0.2f",(unsigned long)slot3Arr.count,(long)passCount,passCount/slot3Arr.count];
+        dispatch_async(dispatch_get_main_queue(), ^{
+            [self logInfo:slot3result];
+        });
+        
+    }
+    
+    passCount = 0;
+//    dispatch_async(dispatch_get_main_queue(), ^{
+//        [_slot4Result setStringValue:@"NA"];
+//    });
+    if (slot4Arr.count > 0) {
+        for (NSString * slotstr in slot4Arr) {
+            if ([slotstr containsString:@"Passed"]) {
+                passCount ++;
+            }
+        }
+        slot4result = [NSString stringWithFormat:@"slot4,input_%lu,Pass_%ld,Yield_%0.2f",(unsigned long)slot4Arr.count,(long)passCount,passCount/slot4Arr.count];
+        dispatch_async(dispatch_get_main_queue(), ^{
+            [self logInfo:slot4result];
+        });
+    }
 }
 
 
