@@ -19,7 +19,6 @@
     // Do any additional setup after loading the view.
 }
 
-
 - (void)setRepresentedObject:(id)representedObject {
     [super setRepresentedObject:representedObject];
 
@@ -46,6 +45,9 @@
     }
     
 }
+
+//SET_IP_ADDR 10.0.100.11$
+
 -(IBAction)getTCPconnect:(id)sender;
 {
     
@@ -61,6 +63,13 @@
         didConnectionOK = false;
         [self logError:[NSString stringWithFormat:@"Connection with %@:%d fail",ip,port]];
     }
+}
+- (IBAction)SETIPBTN:(id)sender {
+    _SetIPTextField.stringValue;
+}
+
+- (IBAction)YieldBTN:(id)sender {
+    
 }
 
 

@@ -29,6 +29,9 @@
 }
 @property (nonatomic,strong) NSDictionary *commandListArray;
 
+@property (weak) IBOutlet NSTextField *SetIPTextField;
+@property (weak) IBOutlet NSTextField *YieldTextField;
+
 -(IBAction)SendCmd:(id)sender;
 -(IBAction)getTCPconnect:(id)sender;
 -(IBAction)disTCPconnect:(id)sender;
