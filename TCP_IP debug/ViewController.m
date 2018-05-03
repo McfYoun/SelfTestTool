@@ -27,6 +27,13 @@
 -(IBAction)SendCmd:(id)sender;
 {
     NSString *cmdstr = [self->cmdCombox stringValue];
+    
+    if ([cmdstr isEqualToString:@"help"]) {
+        [self logInfo:@"---------------------------------------------------------------------------------------------------------------"];
+        [self logInfo:@"1.launchctl unload /Library/AutoDetect/com.apple.hwte.autodetect.plist\n2.AppleInternal/FixtureService/discovery (check IP)\n3.nanohippo (check 2.0)\n4.killall atlascore\n5.launchctl load /Library/AutoDetect/com.apple.hwte.autodetect.plist\n6./AppleInternal/FixtureService/J132BPFixtureService.xpc\n7.launchctl unload /Library/LaunchAgents/com.bp.J132.FixtureService.slot-*\n8.launchctl load /Library/LaunchAgents/com.bp.J132.FixtureService.slot-*\n9./Users/gdlocal/Library/Atlas/sequences.json (testplan)"];
+        return;
+    }
+    
     if (didConnectionOK == true) {
 //        [self->socket clearSocketBuffer];
         if([self->socket WriteCMDBySocket:cmdstr] == true){
@@ -90,6 +97,7 @@
 
 - (IBAction)YieldBTN:(id)sender {
     NSString * finalString = [[NSString alloc] initWithFormat:@"find /vault/Atlas/Units/Archive -mtime -%@ | grep tgz",_YieldTextField.stringValue];
+    [self logInfo:@"---------------------------------------------------------------------------------------------------------------"];
     [self ActionTheCommand:finalString];
 }
 
