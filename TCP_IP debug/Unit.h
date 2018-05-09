@@ -28,8 +28,9 @@
 @interface Unit: NSObject
 
 @property (readonly) int slot;
-@property (readonly) NSString* command;
-@property (readonly) NSDictionary* parameters;
+@property (readonly) NSString * command;
+@property (readonly) NSString * logpath;
+@property (readonly) NSDictionary * parameters;
 @property (nonatomic) Socket * socket;
 
 - (id)initWithContext:(NSDictionary *)context;

@@ -27,20 +27,27 @@
     self->socket->listenSocket = -1;
     commandDic = [[NSDictionary alloc] initWithContentsOfFile:[[NSBundle mainBundle] pathForResource:@"commandList" ofType:@"plist"]];
 //    NSLog(@"%@",commandDic);
-    NSArray * powerOnArr = [commandDic objectForKey:@"powerOn"];
-    NSLog(@"%@",powerOnArr);
+//    NSArray * powerOnArr = [commandDic objectForKey:@"powerOn"];
+//    NSLog(@"%@",powerOnArr);
 //    socket1 = [[Socket alloc] init];
 //    socket2 = [[Socket alloc] init];
 //    socket3 = [[Socket alloc] init];
 //    socket4 = [[Socket alloc] init];
     testItemGroup = dispatch_group_create();
-    // Do any additional setup after loading the view.
+//    powerOnSelected.state = 0;
+//    powerOffSelected.state = 0;
+    PCHSelected.state = 0;
+//    panda.state = 0;
+//    ADCSelected.state = 0;
 }
+
+
 - (IBAction)slot1StartTest:(id)sender {
     Unit * unit1 = [[Unit alloc] initWithContext:@{@"slotId":@"1"}];
     [unit1 setValue:@"hello" forKey:@"command"];
     dispatch_group_async(testItemGroup, dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
         [self startTest:unit1];
+        
     });
 }
 - (IBAction)slot2StartTest:(id)sender {
@@ -69,33 +76,39 @@
     dispatch_semaphore_t semaphore = dispatch_semaphore_create(0);
     dispatch_time_t timeout = dispatch_time(DISPATCH_TIME_NOW, (int64_t)(5* NSEC_PER_SEC));
     __block BOOL connected = NO;
-    [self logInfo:[NSString stringWithFormat:@"Connecting to carbon 10.0.100.%d1!",unit.slot] slot:unit.slot];
+    [self logInfo:[NSString stringWithFormat:@"Connecting to carbon 10.0.100.%d1!",unit.slot] unit:unit];
     dispatch_async(dispatch_queue_create("Connection Queue", NULL),
                    ^{
                        if([socket ConnectSocketIP:address andPort:carbonPort])
                        {
-                           [self logInfo:@"Opening interface successfully!" slot:unit.slot];
+                           [self logInfo:@"Opening interface successfully!" unit:unit];
                            connected = YES;
                            dispatch_semaphore_signal(semaphore);
                        }
-                       
                    });
     dispatch_semaphore_wait(semaphore, timeout);
     
     if (!connected)
     {
-        [self logError:@"Opening interface errored" slot:unit.slot];
+        [self logError:@"Opening interface errored" unit:unit];
         return;
     }
+    
+    NSDateFormatter * formatter = [NSDateFormatter new];
+    [formatter setDateFormat:@"yyyy-MM-dd HH-mm-ss"];
+    [formatter setTimeZone:nil];
+    NSString * timestamp = [formatter stringFromDate:[NSDate date]];
+    NSString * BPLogpath = [NSString stringWithFormat:@"~/Desktop/BPLog/slot%d/%@_BPLOG",unit.slot,timestamp];
+    [unit setValue:BPLogpath forKey:@"logpath"];
     
     do {
         NSString * cmd = @"USB20_SWITCH_DEBUG";
         NSString * oKay = [socket sendCMDBySocket:cmd WithTime:@5];
         if (![oKay containsString:@"OK"])
         {
-            [self logError:@"USB20_SWITCH_DEBUG errored" slot:unit.slot];
+            [self logError:@"USB20_SWITCH_DEBUG errored" unit:unit];
         }else{
-            [self logError:@"USB20_SWITCH_DEBUG OK" slot:unit.slot];
+            [self logInfo:@"USB20_SWITCH_DEBUG OK" unit:unit];
         }
         cmd = @"IIC_BATT_SWITCH_DIS";
         oKay = [socket sendCMDBySocket:cmd WithTime:@5];
@@ -108,17 +121,19 @@
         NSString * oKay = [socket sendCMDBySocket:cmd WithTime:@5];
         if (![oKay containsString:@"OK"])
         {
-            [self logError:@"enable Battery errored\n" slot:unit.slot];
+            [self logError:@"enable Battery errored\n" unit:unit];
             return;
         }
+        [self logInfo:@"enable Battery OK" unit:unit];
         [NSThread sleepForTimeInterval:1];
         cmd = @"IIC_BATT1_SWITCH_EN";
         oKay = [socket sendCMDBySocket:cmd WithTime:@5];
         if (![oKay containsString:@"OK"])
         {
-            [self logError:@"enable I2C errored\n" slot:unit.slot];
+            [self logError:@"enable I2C errored\n" unit:unit];
             return;
         }
+        [self logInfo:@"enable I2C OK" unit:unit];
         
         [NSThread sleepForTimeInterval:2];
         
@@ -130,27 +145,30 @@
         oKay = [socket sendCMDBySocket:cmd WithTime:@5];
         if (![oKay containsString:@"OK"])
         {
-            [self logError:@"disenable Battery errored\n" slot:unit.slot];
+            [self logError:@"disenable Battery errored\n" unit:unit];
             return;
         }
+        [self logInfo:@"disenable Battery OK\n" unit:unit];
         [NSThread sleepForTimeInterval:0.5];
         cmd = @"IIC_BATT1_SWITCH_DIS";
         oKay = [socket sendCMDBySocket:cmd WithTime:@5];
         if (![oKay containsString:@"OK"])
         {
-            [self logError:@"disable i2C errored\n" slot:unit.slot];
+            [self logError:@"disable i2C errored\n" unit:unit];
             return;
         }
+        [self logInfo:@"disenable Battery errored\n" unit:unit];
     } while (0);
     
-    NSArray * powerOnArr = [commandDic objectForKey:@"powerOn"];
-    NSArray * powerOffArr = [commandDic objectForKey:@"powerOff"];
-    NSArray * enterDFUArr = [commandDic objectForKey:@"enterDFU"];
-    
-    NSMutableArray * sequenceArr = [[NSMutableArray alloc] init];
-    [sequenceArr addObject:powerOnArr];
-    [sequenceArr addObject:powerOffArr];
-    [sequenceArr addObject:enterDFUArr];
+//    NSArray * powerOnArr = [commandDic objectForKey:@"powerOn"];
+//    NSArray * powerOffArr = [commandDic objectForKey:@"powerOff"];
+//    NSArray * enterDFUArr = [commandDic objectForKey:@"enterDFU"];
+//    NSArray * measureADC = [commandDic objectForKey:@"measureADC"];
+//
+//    NSMutableArray * sequenceArr = [[NSMutableArray alloc] init];
+//    [sequenceArr addObject:powerOnArr];
+//    [sequenceArr addObject:powerOffArr];
+//    [sequenceArr addObject:enterDFUArr];
     
 //    for (NSArray * arr in sequenceArr) {
 //        if ([self powerOn:unit withArr:arr]) {
@@ -158,13 +176,72 @@
 //        };
 //    }
     
-    [self powerOn:unit];
-    [self powerOff:unit];
-    [self enterDFU:unit];
+    if (panda.state == 1) {
+        if ([self setPanda:unit]) {
+            [self logInfo:@"setpanda Successed!" unit:unit];
+        }else{
+            [self logError:@"setpanda errored!" unit:unit];
+            [self tearDown:unit];
+            return;
+        }
+    }
+    if (powerOnSelected.state == 1) {
+        if ([self powerOn:unit]) {
+            [self logInfo:@"powerON Successed!" unit:unit];
+        }else{
+            [self logError:@"powerOn errored" unit:unit];
+        }
+        [self tearDown:unit];
+        return;
+    }
+    if (powerOffSelected.state == 1) {
+        if ([self powerOff:unit]) {
+            [self logInfo:@"powerOff Successed!" unit:unit];
+        }else{
+            [self logError:@"powerOff errored" unit:unit];
+        }
+        [self tearDown:unit];
+        return;
+    }
+    if (DFUSelected.state == 1) {
+        if ([self enterDFU:unit]) {
+            [self logInfo:@"enterDFU Successed!" unit:unit];
+        }else{
+            [self logError:@"enterDFU errored!" unit:unit];
+        }
+        [self tearDown:unit];
+        return;
+    }
+    if (ADCSelected.state == 1) {
+        if ([self measureADC:unit]) {
+            [self logInfo:@"measureADC Successed!" unit:unit];
+        }else{
+            [self logError:@"measureADC errored!" unit:unit];
+        }
+        [self tearDown:unit];
+        return;
+    }
     
-    
+    [self tearDown:unit];
     [unit setCode:0];
 }
+
+- (BOOL)tearDown:(Unit *)unit
+{
+    BOOL tearDownOK = TRUE;
+    if (![socket DisconnectBySocket])
+    {
+        [self logError:@"Error closing carbon interface on teardown." unit:unit];
+        tearDownOK = FALSE;
+        [unit setCode:-1525];
+    }
+    if (tearDownOK) {
+        return TRUE;
+    }else{
+        return FALSE;
+    }
+}
+
 - (NSString *)BatteryVoltageCheck:(NSString *)CMD unit:(Unit *)unit
 {
     //IIC_BATT1_SET_VOL      set voltage
@@ -181,13 +258,72 @@
         oKay = [oKay stringByReplacingOccurrencesOfString:@"Battery Voltage = " withString:@""];
         oKay = [oKay stringByReplacingOccurrencesOfString:@"mV\r" withString:@""];
         if ((oKay.doubleValue/1000  >= 12.06) && (oKay.doubleValue/1000 <= 13.33)) {
-            [self logInfo:[NSString stringWithFormat:@"Battery Voltage is %f,in limit 12.06-13.33",oKay.doubleValue/1000] slot:unit.slot];
+            [self logInfo:[NSString stringWithFormat:@"Battery Voltage is %f,in limit 12.06-13.33",oKay.doubleValue/1000] unit:unit];
             return @"OK";
         }
     }
-    [self logError:[NSString stringWithFormat:@"Battery Voltage is %f,not in limit 12.06-13.33",oKay.doubleValue/1000] slot:unit.slot];
+    [self logError:[NSString stringWithFormat:@"Battery Voltage is %f,not in limit 12.06-13.33",oKay.doubleValue/1000] unit:unit];
     return @"ERROR";
 }
+#pragma mark panda value need add judge
+- (BOOL)setPanda:(Unit *)unit
+{
+    BOOL pandaOK = TRUE;
+    NSString * v = [NSString stringWithString:pandaValue.stringValue];  //value:0x1122   IIC_PWR_SWITCH_EN  IIC_PANDA_WR_DATA
+    NSString *f = [NSString stringWithUTF8String:"0xFFFF"];
+    unsigned long vHex = strtoul([v UTF8String],0,16);
+    unsigned long fHex = strtoul([f UTF8String],0,16);
+    
+    NSString *v1 = [NSString stringWithFormat:@"%0lX",(fHex - vHex)];// return EEDD if value is 0x1122
+    
+    NSString * cmd = [[NSString alloc] init];
+    NSString * readback = [[NSString alloc] init];
+    
+    readback = [socket sendCMDBySocket:@"IIC_PWR_SWITCH_EN" WithTime:@5];
+    if (![readback containsString:@"OK"]) {
+        [self logError:@"IIC_PWR_SWITCH_EN set errored" unit:unit];
+    }else{
+        [self logError:@"IIC_PWR_SWITCH_EN set successed" unit:unit];
+    }
+    [NSThread sleepForTimeInterval:0.2];
+    
+    cmd = [NSString stringWithFormat:@"IIC_PANDA_WR_DATA %@",v1];
+    readback = [socket sendCMDBySocket:cmd WithTime:@5];
+    if ([readback containsString:@"OK"]) {
+        [self logInfo:@"setPanda value:%@ successed" unit:unit];
+        [unit setCode:0];
+    }else{
+        [self logError:@"setPanda value:%@ errored" unit:unit];
+        //need to set error code;
+        [unit setCode:-1327];
+        pandaOK = FALSE;
+    }
+    
+    cmd = [NSString stringWithFormat:@"IIC_PANDA_WR_DATA %@",v1];
+    readback = [socket sendCMDBySocket:cmd WithTime:@5];
+    if ([readback containsString:@"OK"]) {
+        [self logInfo:@"setPanda value:%@ successed" unit:unit];
+        [unit setCode:0];
+    }else{
+        [self logError:@"setPanda value:%@ errored" unit:unit];
+        //need to set error code;
+        [unit setCode:-1327];
+        pandaOK = FALSE;
+    }
+    //IIC_PANDA_RD_DATA
+    readback = [socket sendCMDBySocket:@"IIC_PANDA_RD_DATA" WithTime:@5];
+    if ([readback containsString:@"OK"]) {
+        [self logInfo:@"readPanda value:%@ successed" unit:unit];
+        [unit setCode:0];
+    }else{
+        [self logError:@"readPanda value:%@ errored" unit:unit];
+        //need to set error code;
+        [unit setCode:-1327];
+        pandaOK = FALSE;
+    }
+    return pandaOK;
+}
+
 
 - (BOOL)powerOn:(Unit *)unit
 {
@@ -204,9 +340,9 @@
         {
             oKay = [socket sendCMDBySocket:cmd WithTime:@5];
             if ([oKay containsString:@"OK"]) {
-                [self logInfo:oKay slot:unit.slot];
+                [self logInfo:oKay unit:unit];
             }else{
-                [self logError:oKay slot:unit.slot];
+                [self logError:oKay unit:unit];
                 [unit setCode:110];
                 powerOnPass = FALSE;
                 return FALSE;
@@ -222,19 +358,19 @@
             volCheck = [self getADCValueBySignal:cmdArr[0] unit:unit];
             if ([cmd containsString:@"+"]) {
                 if (volCheck.doubleValue > [cmdArr[2] doubleValue]) {
-                    [self logInfo:[NSString stringWithFormat:@"%@ value is %@ in limit[value > %@]",cmdArr[0],volCheck,cmdArr[2]] slot:unit.slot];
+                    [self logInfo:[NSString stringWithFormat:@"%@ value is %@ in limit[value > %@]",cmdArr[0],volCheck,cmdArr[2]] unit:unit];
                     break;
                 }else{
-                    [self logError:[NSString stringWithFormat:@"%@ value is not in limit[value > %@]",cmdArr[0],cmdArr[2]] slot:unit.slot];
+                    [self logError:[NSString stringWithFormat:@"%@ value is not in limit[value > %@]",cmdArr[0],cmdArr[2]] unit:unit];
                     [unit setCode:-1227];
                     powerOnPass = FALSE;
                 }
             }else{
                 if ((volCheck.doubleValue > [cmdArr[2] doubleValue]) && (volCheck.doubleValue < [cmdArr[3] doubleValue])) {
-                    [self logInfo:[NSString stringWithFormat:@"%@ value is %@ in limit[%@-%@]",cmdArr[0],volCheck,cmdArr[2],cmdArr[3]] slot:unit.slot];
+                    [self logInfo:[NSString stringWithFormat:@"%@ value is %@ in limit[%@-%@]",cmdArr[0],volCheck,cmdArr[2],cmdArr[3]] unit:unit];
                     break;
                 }else{
-                    [self logError:[NSString stringWithFormat:@"%@ value is not in limit[%@-%@]",cmdArr[0],cmdArr[2],cmdArr[3]] slot:unit.slot];
+                    [self logError:[NSString stringWithFormat:@"%@ value is not in limit[%@-%@]",cmdArr[0],cmdArr[2],cmdArr[3]] unit:unit];
                     [unit setCode:-1227];
                     powerOnPass = FALSE;
                 }
@@ -265,9 +401,9 @@
         {
             oKay = [socket sendCMDBySocket:cmd WithTime:@5];
             if ([oKay containsString:@"OK"]) {
-                [self logInfo:oKay slot:unit.slot];
+                [self logInfo:oKay unit:unit];
             }else{
-                [self logError:oKay slot:unit.slot];
+                [self logError:oKay unit:unit];
                 [unit setCode:110];
                 powerOffPass = FALSE;
                 return FALSE;
@@ -283,19 +419,19 @@
             volCheck = [self getADCValueBySignal:cmdArr[0] unit:unit];
             if ([cmd containsString:@"+"]) {
                 if (volCheck.doubleValue > [cmdArr[2] doubleValue]) {
-                    [self logInfo:[NSString stringWithFormat:@"%@ value is %@ in limit[value > %@]",cmdArr[0],volCheck,cmdArr[2]] slot:unit.slot];
+                    [self logInfo:[NSString stringWithFormat:@"%@ value is %@ in limit[value > %@]",cmdArr[0],volCheck,cmdArr[2]] unit:unit];
                     break;
                 }else{
-                    [self logError:[NSString stringWithFormat:@"%@ value is not in limit[value > %@]",cmdArr[0],cmdArr[2]] slot:unit.slot];
+                    [self logError:[NSString stringWithFormat:@"%@ value is not in limit[value > %@]",cmdArr[0],cmdArr[2]] unit:unit];
                     [unit setCode:-1227];
                     powerOffPass = FALSE;
                 }
             }else{
                 if ((volCheck.doubleValue > [cmdArr[2] doubleValue]) && (volCheck.doubleValue < [cmdArr[3] doubleValue])) {
-                    [self logInfo:[NSString stringWithFormat:@"%@ value is %@ in limit[%@-%@]",cmdArr[0],volCheck,cmdArr[2],cmdArr[3]] slot:unit.slot];
+                    [self logInfo:[NSString stringWithFormat:@"%@ value is %@ in limit[%@-%@]",cmdArr[0],volCheck,cmdArr[2],cmdArr[3]] unit:unit];
                     break;
                 }else{
-                    [self logError:[NSString stringWithFormat:@"%@ value is not in limit[%@-%@]",cmdArr[0],cmdArr[2],cmdArr[3]] slot:unit.slot];
+                    [self logError:[NSString stringWithFormat:@"%@ value is not in limit[%@-%@]",cmdArr[0],cmdArr[2],cmdArr[3]] unit:unit];
                     [unit setCode:-1227];
                     powerOffPass = FALSE;
                 }
@@ -331,9 +467,9 @@
         {
             oKay = [socket sendCMDBySocket:cmd WithTime:@5];
             if ([oKay containsString:@"OK"]) {
-                [self logInfo:oKay slot:unit.slot];
+                [self logInfo:oKay unit:unit];
             }else{
-                [self logError:oKay slot:unit.slot];
+                [self logError:oKay unit:unit];
                 [unit setCode:110];
                 enterDFUPass = FALSE;
                 return FALSE;
@@ -349,19 +485,19 @@
             volCheck = [self getADCValueBySignal:cmdArr[0] unit:unit];
             if ([cmd containsString:@"+"]) {
                 if (volCheck.doubleValue > [cmdArr[2] doubleValue]) {
-                    [self logInfo:[NSString stringWithFormat:@"%@ value is %@ in limit[value > %@]",cmdArr[0],volCheck,cmdArr[2]] slot:unit.slot];
+                    [self logInfo:[NSString stringWithFormat:@"%@ value is %@ in limit[value > %@]",cmdArr[0],volCheck,cmdArr[2]] unit:unit];
                     break;
                 }else{
-                    [self logError:[NSString stringWithFormat:@"%@ value is not in limit[value > %@]",cmdArr[0],cmdArr[2]] slot:unit.slot];
+                    [self logError:[NSString stringWithFormat:@"%@ value is not in limit[value > %@]",cmdArr[0],cmdArr[2]] unit:unit];
                     [unit setCode:-1227];
                     enterDFUPass = FALSE;
                 }
             }else{
                 if ((volCheck.doubleValue > [cmdArr[2] doubleValue]) && (volCheck.doubleValue < [cmdArr[3] doubleValue])) {
-                    [self logInfo:[NSString stringWithFormat:@"%@ value is %@ in limit[%@-%@]",cmdArr[0],volCheck,cmdArr[2],cmdArr[3]] slot:unit.slot];
+                    [self logInfo:[NSString stringWithFormat:@"%@ value is %@ in limit[%@-%@]",cmdArr[0],volCheck,cmdArr[2],cmdArr[3]] unit:unit];
                     break;
                 }else{
-                    [self logError:[NSString stringWithFormat:@"%@ value is not in limit[%@-%@]",cmdArr[0],cmdArr[2],cmdArr[3]] slot:unit.slot];
+                    [self logError:[NSString stringWithFormat:@"%@ value is not in limit[%@-%@]",cmdArr[0],cmdArr[2],cmdArr[3]] unit:unit];
                     [unit setCode:-1227];
                     enterDFUPass = FALSE;
                 }
@@ -375,7 +511,36 @@
     }else{
         return FALSE;
     }
+}
+
+- (BOOL)measureADC:(Unit *)unit
+{
+    BOOL ADCPass = TRUE;
+    NSNumber * volCheck = nil;
+    NSArray * measureADC = [commandDic objectForKey:@"measureADC"];
+    for (NSString * cmd in measureADC)
+    {
+        NSDate * timeout = [NSDate dateWithTimeIntervalSinceNow:5];
+        while ([[NSDate date] timeIntervalSinceDate:timeout] < 0) {
+            volCheck = [self getADCValueBySignal:cmd unit:unit];
+                if ((volCheck.doubleValue > 1.75) && (volCheck.doubleValue < 1.85)) {
+                    [self logInfo:[NSString stringWithFormat:@"%@ value is %@ in limit[1.75-1.85]",cmd,volCheck] unit:unit];
+                    break;
+                }else{
+                    [self logError:[NSString stringWithFormat:@"%@ value is %@ not in limit[1.75-1.85]",cmd,volCheck] unit:unit];
+                    [unit setCode:-1227];
+                    ADCPass = FALSE;
+                }
+        }
+        [NSThread sleepForTimeInterval:1];
+    }
     
+    if (ADCPass) {
+        return TRUE;
+    }else{
+        return FALSE;
+    }
+    return TRUE;
 }
 
 - (NSNumber *)getADCValueBySignal:(NSString *)signal unit:(Unit *)unit
@@ -399,14 +564,14 @@
     }
     if (didTimeout)
     {
-        [self logError:@"Error:  UART (%@) command '%@' timeout!\n" slot:unit.slot];
+        [self logError:@"Error:  UART (%@) command '%@' timeout!\n" unit:unit];
         return defaultReturn;
     }
     
     // begin get the number value from the response string.
     if ([response containsString:@"error"])
     {
-        [self logError:@"command return error" slot:unit.slot];
+        [self logError:@"command return error" unit:unit];
         return defaultReturn;
     }
     
@@ -416,7 +581,7 @@
     NSRegularExpression *regExp = [NSRegularExpression regularExpressionWithPattern:patternStr options:NSRegularExpressionCaseInsensitive error:nil];
     if (!response)
     {
-        [self logError:@"Response is nil!!!" slot:unit.slot];
+        [self logError:@"Response is nil!!!" unit:unit];
         return defaultReturn;
     }
 
@@ -430,7 +595,7 @@
         {
             NSRange firstHalfRange = [match rangeAtIndex:1];
             value = [response substringWithRange:firstHalfRange];
-            [self logInfo:[NSString stringWithFormat:@"%@ value=%@",signal,value] slot:unit.slot];
+            [self logInfo:[NSString stringWithFormat:@"%@ value=%@",signal,value] unit:unit];
             break;
         }
     }
@@ -438,7 +603,7 @@
     {
         if (exception)
         {
-            [self logError:[NSString stringWithFormat:@"<Exception> can't get expect value string(xx.xx) error:%@\n",exception] slot:unit.slot];
+            [self logError:[NSString stringWithFormat:@"<Exception> can't get expect value string(xx.xx) error:%@\n",exception] unit:unit];
             return defaultReturn;
         }
     }
@@ -487,7 +652,7 @@ uint8_t CarbonADCChannelForSignal(NSString* signal)
     
     RETURN_CH_MAP("PMU_SYS_ALIVE",22);
     RETURN_CH_MAP("PM_PCH_PWROK",23);
-    RETURN_CH_MAP("NULL",24);
+    RETURN_CH_MAP("NULL",24); //SOC_SOCHOT_L
     RETURN_CH_MAP("PP20V_USBC_XA_VBUS",25);
     //    RETURN_CH_MAP("SYS_DETECT_L",26);
     RETURN_CH_MAP("PMU_ACTIVE_READY",27);
@@ -520,24 +685,51 @@ uint8_t CarbonADCChannelForSignal(NSString* signal)
     // Update the view, if already loaded.
 }
 
-#pragma mark - Log method -
-- (void)logInfo:(NSString *)msg slot:(int)slot
+- (void)Writelog:(NSString *)str unit:(Unit *)unit
 {
-    NSString *paragraph = [NSString stringWithFormat:@"[SLOT %d]: %@\n",slot,msg];
+    
+    NSDateFormatter * formatter = [NSDateFormatter new];
+    [formatter setDateFormat:@"yyyy-MM-dd HH:mm:ss "];
+    [formatter setTimeZone:nil];
+    NSString * timestamp = [formatter stringFromDate:[NSDate date]];
+    NSString * timeStamppedString = [NSString stringWithFormat:@"%@%@\n",timestamp,str];
+
+    NSFileHandle * fh;
+
+    if (![[NSFileManager defaultManager] fileExistsAtPath:unit.logpath])
+    {
+        BOOL makeFile = [[NSFileManager defaultManager] createFileAtPath:unit.logpath contents:nil attributes:nil];
+        if (makeFile) {
+            //            NSLog(@"create success");
+        }
+    }
+
+    fh = [NSFileHandle fileHandleForWritingAtPath:unit.logpath];
+    //    [fh seekToFileOffset:0];
+    [fh seekToEndOfFile];
+    NSData * data = [timeStamppedString dataUsingEncoding:NSUTF8StringEncoding];
+    //    NSLog(@"write %@",timeStamppedString);
+    [fh writeData:data];
+    [fh closeFile];
+}
+
+#pragma mark - Log method -
+- (void)logInfo:(NSString *)msg unit:(Unit *)unit
+{
+    NSString *paragraph = [NSString stringWithFormat:@"[SLOT %d]: %@\n",unit.slot,msg];
     
     NSMutableDictionary *attributes = [NSMutableDictionary dictionaryWithCapacity:1];
     [attributes setObject:[NSColor blackColor] forKey:NSForegroundColorAttributeName];
     
     NSAttributedString *as = [[NSAttributedString alloc] initWithString:paragraph attributes:attributes];
-    
     dispatch_async(dispatch_get_main_queue(), ^{
         [[LogView textStorage] appendAttributedString:as];
         [self scrollToBottom];
     });
 }
-- (void)logError:(NSString *)msg slot:(int)slot
+- (void)logError:(NSString *)msg unit:(Unit *)unit
 {
-    NSString *paragraph = [NSString stringWithFormat:@"[SLOT %d]: %@\n",slot,msg];
+    NSString *paragraph = [NSString stringWithFormat:@"[SLOT %d]: %@\n",unit.slot,msg];
     
     NSMutableDictionary *attributes = [NSMutableDictionary dictionaryWithCapacity:1];
     [attributes setObject:[NSColor redColor] forKey:NSForegroundColorAttributeName];

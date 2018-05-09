@@ -18,11 +18,23 @@
     IBOutlet NSComboBox *cmdCombox;
     IBOutlet NSPopUpButton *category;
     
-    IBOutlet NSButton *connect;
-    IBOutlet NSButton *Send;
-    IBOutlet NSTextField *ShowFeedBack;
+    __weak IBOutlet NSButton *powerOnSelected;
+    __weak IBOutlet NSButton *powerOffSelected;
+    __weak IBOutlet NSButton *PCHSelected;
+    __weak IBOutlet NSButton *ADCSelected;
+    __weak IBOutlet NSButton *panda;
+    __weak IBOutlet NSButton *DFUSelected;
+    
+    
+    __weak IBOutlet NSTextField *pandaValue;
+    __weak IBOutlet NSTextField *pchValue;
+    
+//    IBOutlet NSButton *connect;
+//    IBOutlet NSButton *Send;
+//    IBOutlet NSTextField *ShowFeedBack;
     BOOL didConnectionOK;
     IBOutlet NSTextView *LogView;
+    __weak IBOutlet NSButton *powerOnCheck;
 }
 @property (nonatomic,strong) NSDictionary *commandListArray;
 

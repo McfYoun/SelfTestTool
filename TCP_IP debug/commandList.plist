@@ -2,10 +2,6 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
-	<key>isPowerOff</key>
-	<string>NO</string>
-	<key>isPowerOn</key>
-	<string>NO</string>
 	<key>initialize</key>
 	<array>
 		<string>USB20_SWITCH_DEBUG</string>
@@ -72,6 +68,47 @@
 		<string>POWERON</string>
 		<string>SOC_DFU_STATUS,limit,1.62,1.92</string>
 		<string>FORCE_DFU_POWER_OFF</string>
+	</array>
+	<key>measureADC</key>
+	<array>
+		<string>SOC_USB_VBUS</string>
+		<string>PM_PCH_SYS_PWROK</string>
+		<string>PM_SLP_S3_L</string>
+		<string>PPBUS_G3H</string>
+		<string>PP3V3_G3H</string>
+		<string>PP1V_PRIM</string>
+		<string>PPVCC_S0_CPU</string>
+		<string>PP3V3_G3H_RTC</string>
+		<string>CHGR_EN_MVR</string>
+		<string>PP1V8_SSD0</string>
+		<string>PP0V9_SSD0</string>
+		<string>PP2V7_NAND_SSD0</string>
+		<string>PP1V8_G3S</string>
+		<string>SSD_PMU_RESET_L</string>
+		<string>PMU_COLD_RESET_L</string>
+		<string>PPDCIN_G3H</string>
+		<string>PP3V3_S5</string>
+		<string>PPDCIN_G3H_CHGR</string>
+		<string>PP1V2_S3</string>
+		<string>PP0V82_SLPDDR</string>
+		<string>PPVBAT_G3H_CONN</string>
+		<string>PPVDDCPU_AWAKE</string>
+		<string>PP1V8_SLPS2R</string>
+		<string>PMU_SYS_ALIVE</string>
+		<string>PM_SYSRST_L</string>
+		<string>PLT_RST_L</string>
+		<string>PM_RSMRST_L</string>
+		<string>PM_PCH_PWROK</string>
+		<string>SOC_SOCHOT_L</string>
+		<string>PP20V_USBC_XA_VBUS</string>
+		<string>SYS_DETECT</string>
+		<string>PMU_ACTIVE_READY</string>
+		<string>SOC_FORCE_DFU</string>
+		<string>PP20V_USBC_XB_VBUS</string>
+		<string>PP20V_USBC_TA_VBUS</string>
+		<string>PP20V_USBC_TB_VBUS</string>
+		<string>PP1V8_S5</string>
+		<string>SMC_SYSRST_L</string>
 	</array>
 </dict>
 </plist>
