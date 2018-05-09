@@ -269,58 +269,58 @@
 - (BOOL)setPanda:(Unit *)unit
 {
     BOOL pandaOK = TRUE;
-    NSString * v = [NSString stringWithString:pandaValue.stringValue];  //value:0x1122   IIC_PWR_SWITCH_EN  IIC_PANDA_WR_DATA
-    NSString *f = [NSString stringWithUTF8String:"0xFFFF"];
-    unsigned long vHex = strtoul([v UTF8String],0,16);
-    unsigned long fHex = strtoul([f UTF8String],0,16);
-    
-    NSString *v1 = [NSString stringWithFormat:@"%0lX",(fHex - vHex)];// return EEDD if value is 0x1122
-    
-    NSString * cmd = [[NSString alloc] init];
-    NSString * readback = [[NSString alloc] init];
-    
-    readback = [socket sendCMDBySocket:@"IIC_PWR_SWITCH_EN" WithTime:@5];
-    if (![readback containsString:@"OK"]) {
-        [self logError:@"IIC_PWR_SWITCH_EN set errored" unit:unit];
-    }else{
-        [self logError:@"IIC_PWR_SWITCH_EN set successed" unit:unit];
-    }
-    [NSThread sleepForTimeInterval:0.2];
-    
-    cmd = [NSString stringWithFormat:@"IIC_PANDA_WR_DATA %@",v1];
-    readback = [socket sendCMDBySocket:cmd WithTime:@5];
-    if ([readback containsString:@"OK"]) {
-        [self logInfo:@"setPanda value:%@ successed" unit:unit];
-        [unit setCode:0];
-    }else{
-        [self logError:@"setPanda value:%@ errored" unit:unit];
-        //need to set error code;
-        [unit setCode:-1327];
-        pandaOK = FALSE;
-    }
-    
-    cmd = [NSString stringWithFormat:@"IIC_PANDA_WR_DATA %@",v1];
-    readback = [socket sendCMDBySocket:cmd WithTime:@5];
-    if ([readback containsString:@"OK"]) {
-        [self logInfo:@"setPanda value:%@ successed" unit:unit];
-        [unit setCode:0];
-    }else{
-        [self logError:@"setPanda value:%@ errored" unit:unit];
-        //need to set error code;
-        [unit setCode:-1327];
-        pandaOK = FALSE;
-    }
-    //IIC_PANDA_RD_DATA
-    readback = [socket sendCMDBySocket:@"IIC_PANDA_RD_DATA" WithTime:@5];
-    if ([readback containsString:@"OK"]) {
-        [self logInfo:@"readPanda value:%@ successed" unit:unit];
-        [unit setCode:0];
-    }else{
-        [self logError:@"readPanda value:%@ errored" unit:unit];
-        //need to set error code;
-        [unit setCode:-1327];
-        pandaOK = FALSE;
-    }
+//    NSString * v = [NSString stringWithString:pandaValue.stringValue];  //value:0x1122   IIC_PWR_SWITCH_EN  IIC_PANDA_WR_DATA
+//    NSString *f = [NSString stringWithUTF8String:"0xFFFF"];
+//    unsigned long vHex = strtoul([v UTF8String],0,16);
+//    unsigned long fHex = strtoul([f UTF8String],0,16);
+//
+//    NSString *v1 = [NSString stringWithFormat:@"%0lX",(fHex - vHex)];// return EEDD if value is 0x1122
+//
+//    NSString * cmd = [[NSString alloc] init];
+//    NSString * readback = [[NSString alloc] init];
+//
+//    readback = [socket sendCMDBySocket:@"IIC_PWR_SWITCH_EN" WithTime:@5];
+//    if (![readback containsString:@"OK"]) {
+//        [self logError:@"IIC_PWR_SWITCH_EN set errored" unit:unit];
+//    }else{
+//        [self logError:@"IIC_PWR_SWITCH_EN set successed" unit:unit];
+//    }
+//    [NSThread sleepForTimeInterval:0.2];
+//
+//    cmd = [NSString stringWithFormat:@"IIC_PANDA_WR_DATA %@",v1];
+//    readback = [socket sendCMDBySocket:cmd WithTime:@5];
+//    if ([readback containsString:@"OK"]) {
+//        [self logInfo:@"setPanda value:%@ successed" unit:unit];
+//        [unit setCode:0];
+//    }else{
+//        [self logError:@"setPanda value:%@ errored" unit:unit];
+//        //need to set error code;
+//        [unit setCode:-1327];
+//        pandaOK = FALSE;
+//    }
+//
+//    cmd = [NSString stringWithFormat:@"IIC_PANDA_WR_DATA %@",v1];
+//    readback = [socket sendCMDBySocket:cmd WithTime:@5];
+//    if ([readback containsString:@"OK"]) {
+//        [self logInfo:@"setPanda value:%@ successed" unit:unit];
+//        [unit setCode:0];
+//    }else{
+//        [self logError:@"setPanda value:%@ errored" unit:unit];
+//        //need to set error code;
+//        [unit setCode:-1327];
+//        pandaOK = FALSE;
+//    }
+//    //IIC_PANDA_RD_DATA
+//    readback = [socket sendCMDBySocket:@"IIC_PANDA_RD_DATA" WithTime:@5];
+//    if ([readback containsString:@"OK"]) {
+//        [self logInfo:@"readPanda value:%@ successed" unit:unit];
+//        [unit setCode:0];
+//    }else{
+//        [self logError:@"readPanda value:%@ errored" unit:unit];
+//        //need to set error code;
+//        [unit setCode:-1327];
+//        pandaOK = FALSE;
+//    }
     return pandaOK;
 }
 
@@ -717,10 +717,9 @@ uint8_t CarbonADCChannelForSignal(NSString* signal)
 - (void)logInfo:(NSString *)msg unit:(Unit *)unit
 {
     NSString *paragraph = [NSString stringWithFormat:@"[SLOT %d]: %@\n",unit.slot,msg];
-    
+    [self Writelog:paragraph unit:unit];
     NSMutableDictionary *attributes = [NSMutableDictionary dictionaryWithCapacity:1];
     [attributes setObject:[NSColor blackColor] forKey:NSForegroundColorAttributeName];
-    
     NSAttributedString *as = [[NSAttributedString alloc] initWithString:paragraph attributes:attributes];
     dispatch_async(dispatch_get_main_queue(), ^{
         [[LogView textStorage] appendAttributedString:as];
@@ -730,7 +729,7 @@ uint8_t CarbonADCChannelForSignal(NSString* signal)
 - (void)logError:(NSString *)msg unit:(Unit *)unit
 {
     NSString *paragraph = [NSString stringWithFormat:@"[SLOT %d]: %@\n",unit.slot,msg];
-    
+    [self Writelog:paragraph unit:unit];
     NSMutableDictionary *attributes = [NSMutableDictionary dictionaryWithCapacity:1];
     [attributes setObject:[NSColor redColor] forKey:NSForegroundColorAttributeName];
     

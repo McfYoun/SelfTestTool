@@ -26,6 +26,7 @@
                                 kFailureMessage:@""
                               };
     _socket = [context valueForKey:@"socket"];
+    _logpath = [context valueForKey:@"logpath"];
     _slot = [[context valueForKey:@"slotId"] intValue];
     _command = [context valueForKey:@"command"];
     _parameters = [context objectForKey:@"parameters"];
