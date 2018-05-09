@@ -8,6 +8,8 @@
 
 /* Begin PBXBuildFile section */
 		E0216A721EACEC3E003593B7 /* commandList.plist in Resources */ = {isa = PBXBuildFile; fileRef = E0216A711EACEC3E003593B7 /* commandList.plist */; };
+		E08276C020A2952900D5A583 /* Unit.m in Sources */ = {isa = PBXBuildFile; fileRef = E08276BE20A2952900D5A583 /* Unit.m */; };
+		E08276C320A2957900D5A583 /* ErrorCodes.m in Sources */ = {isa = PBXBuildFile; fileRef = E08276C120A2957800D5A583 /* ErrorCodes.m */; };
 		E0930C111E690BC000A1B9D3 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = E0930C101E690BC000A1B9D3 /* AppDelegate.m */; };
 		E0930C141E690BC000A1B9D3 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = E0930C131E690BC000A1B9D3 /* main.m */; };
 		E0930C171E690BC000A1B9D3 /* ViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = E0930C161E690BC000A1B9D3 /* ViewController.m */; };
@@ -19,6 +21,10 @@
 
 /* Begin PBXFileReference section */
 		E0216A711EACEC3E003593B7 /* commandList.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = commandList.plist; sourceTree = "<group>"; };
+		E08276BE20A2952900D5A583 /* Unit.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Unit.m; sourceTree = "<group>"; };
+		E08276BF20A2952900D5A583 /* Unit.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Unit.h; sourceTree = "<group>"; };
+		E08276C120A2957800D5A583 /* ErrorCodes.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ErrorCodes.m; sourceTree = "<group>"; };
+		E08276C220A2957800D5A583 /* ErrorCodes.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ErrorCodes.h; sourceTree = "<group>"; };
 		E0930C0C1E690BBF00A1B9D3 /* TCP_IP debug.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "TCP_IP debug.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		E0930C0F1E690BC000A1B9D3 /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
 		E0930C101E690BC000A1B9D3 /* AppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AppDelegate.m; sourceTree = "<group>"; };
@@ -70,6 +76,10 @@
 				E0930C161E690BC000A1B9D3 /* ViewController.m */,
 				E0930C271E690DDD00A1B9D3 /* Socket.h */,
 				E0930C281E690DDD00A1B9D3 /* Socket.m */,
+				E08276BF20A2952900D5A583 /* Unit.h */,
+				E08276BE20A2952900D5A583 /* Unit.m */,
+				E08276C220A2957800D5A583 /* ErrorCodes.h */,
+				E08276C120A2957800D5A583 /* ErrorCodes.m */,
 				E0216A711EACEC3E003593B7 /* commandList.plist */,
 				E0930C181E690BC000A1B9D3 /* Assets.xcassets */,
 				E0930C1A1E690BC000A1B9D3 /* Main.storyboard */,
@@ -160,10 +170,12 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				E08276C020A2952900D5A583 /* Unit.m in Sources */,
 				E0930C291E690DDD00A1B9D3 /* Socket.m in Sources */,
 				E0930C171E690BC000A1B9D3 /* ViewController.m in Sources */,
 				E0930C141E690BC000A1B9D3 /* main.m in Sources */,
 				E0930C111E690BC000A1B9D3 /* AppDelegate.m in Sources */,
+				E08276C320A2957900D5A583 /* ErrorCodes.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

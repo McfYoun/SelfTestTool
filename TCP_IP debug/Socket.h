@@ -14,6 +14,9 @@
     int listenSocket;
 }
 
+-(NSString *)sendCMDBySocket:(NSString *)cmd WithTime:(NSNumber *)timeout;
+-(NSString *)ReadStrBySocketWithTime:(NSNumber *)timeout;
+-(NSString *)ReadStrBySocketWithTime:(NSNumber *)timeout frameTerminator:(NSString *)frameTerminator;
 -(BOOL)ConnectSocketIP:(NSString *)IP andPort:(int)port;
 -(BOOL)ConnectSocketIPUDP:(NSString *)IP andPort:(int)port;
 -(BOOL)DisconnectBySocket;

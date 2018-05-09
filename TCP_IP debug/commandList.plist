@@ -2,128 +2,75 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
-	<key>Carbon_System</key>
+	<key>isPowerOff</key>
+	<string>NO</string>
+	<key>isPowerOn</key>
+	<string>NO</string>
+	<key>initialize</key>
 	<array>
-		<string>CNVT_HELP</string>
-		<string>CNVT_VER</string>
-		<string>CNVT_GET_HW_SW_INFO</string>
-		<string>CNVT_RESET_MCU</string>
+		<string>USB20_SWITCH_DEBUG</string>
+		<string>IIC_BATT_SWITCH_DIS</string>
+		<string>FORCE_BAT_EN</string>
+		<string>IIC_BATT1_SWITCH_EN</string>
+		<string>IIC_BATT1_READ_VOL,limit,12.06,13.33</string>
+		<string>MLB_EN_BAT</string>
+		<string>IIC_BATT1_SWITCH_DIS</string>
 	</array>
-	<key>Carbon_Get Sta</key>
+	<key>powerOn</key>
 	<array>
-		<string>CNVT_GET_START_BUTTON_STATE</string>
-		<string>CNVT_GET_UUT_PRESENT_STATE</string>
-		<string>CNVT_GET_DRAWER_UP_STATE</string>
-		<string>CNVT_GET_DRAWER_DOWN_STATE</string>
-		<string>CNVT_GET_DRAWER_IN_STATE</string>
-		<string>CNVT_GET_DRAWER_OUT_STATE</string>
-		<string>CNVT_GET_DRAWER_READY_STATE</string>
-		<string>CNVT_GET_FIX_MODE</string>
-		<string>GET_PMU_ACTIVE_READY_STATE</string>
-		<string>GET_SOC_DFU_STATUS_STATE</string>
-		<string>GET_SOC_DOCK_CONNECT_STATE</string>
-		<string>GET_SOC_SWD_MUX_SEL_STATE</string>
+		<string>FORCE_BAT_CHGR</string>
+		<string>IIC_BATT_SWITCH_EN</string>
+		<string>IIC_UPC_SWITCH_EN</string>
+		<string>BAT_POWER_OFF</string>
+		<string>POS_VBUS_FLOAT</string>
+		<string>USB20_SWITCH_DEBUG</string>
+		<string>BAT_POWER_ON</string>
+		<string>FORCE_BAT_EN</string>
+		<string>PP3V3_G3H,limit,3,+</string>
+		<string>SYS_DETECT,limit,3,+</string>
+		<string>MLB_EN_BAT</string>
+		<string>DC_POWER_ON</string>
+		<string>POS_VBUS_TO_PP20V_XA_VBUS</string>
+		<string>USB20_SWITCH_POS</string>
+		<string>PMU_SYS_ALIVE,limit,1,+</string>
+		<string>PMU_ACTIVE_READY,limit,1,+</string>
+		<string>PPVDDCPU_AWAKE,limit,0.5,+</string>
 	</array>
-	<key>Carbon_LED</key>
+	<key>powerOff</key>
 	<array>
-		<string>CNVT_TEST_LED_PASS</string>
-		<string>CNVT_TEST_LED_FAIL</string>
-		<string>CNVT_TEST_LED_INPROCESS</string>
-		<string>CNVT_TEST_LED_FLASH</string>
-		<string>CNVT_TEST_LED_OFF</string>
-		<string>CNVT_DRAWER_LED_PASS</string>
-		<string>CNVT_DRAWER_LED_FAIL</string>
-		<string>CNVT_DRAWER_LED_INPROCESS</string>
-		<string>CNVT_DRAWER_LED_OFF</string>
+		<string>MLB_CHGR_BAT</string>
+		<string>POS_VBUS_FLOAT</string>
+		<string>USB20_SWITCH_DEBUG</string>
+		<string>DC_POWER_OFF</string>
+		<string>FORCE_PP20V_XA_VBUS_DIS_CHGR</string>
+		<string>PP20V_USBC_XA_VBUS,limit,0,1</string>
+		<string>PPDCIN_G3H,limit,0,1</string>
+		<string>PP20V_XA_VBUS_NATURE_DIS_CHGR</string>
+		<string>PMU_RSLOC_RST_L_RESET_HOLD</string>
+		<string>sleep,5</string>
+		<string>PMU_ONOFF_R_L_RESET_HOLD</string>
+		<string>sleep,5</string>
+		<string>BAT_POWER_OFF</string>
+		<string>PMU_RSLOC_RST_L_RELEASE</string>
+		<string>PMU_ONOFF_R_L_RELEASE</string>
+		<string>FORCE_BAT_G3H_DIS_CHGR</string>
+		<string>FORCE_PPBUS_G3H_DIS_CHGR</string>
+		<string>PPBUS_G3H,limit,0,1</string>
+		<string>PPVBAT_G3H_CONN,limit,0,1</string>
+		<string>BAT_G3H_NATURE_DIS_CHGR</string>
+		<string>PPBUS_G3H_NATURE_DIS_CHGR</string>
+		<string>PP2V7_NAND_SSD0,limit,0,0.1</string>
+		<string>PP1V8_SSD0,limit,0,0.1</string>
+		<string>PP0V9_SSD0,limit,0,0.1</string>
+		<string>SYS_DETECT,limit,0,0.1</string>
+		<string>PP3V3_G3H_RTC,limit,0,0.1</string>
 	</array>
-	<key>Carbon_Draw Ctrl</key>
-	<array>
-		<string>drawer_ctrl open</string>
-		<string>drawer_ctrl close</string>
-		<string>drawer_ctrl up</string>
-		<string>drawer_ctrl down</string>
-	</array>
-	<key>Carbon Power</key>
-	<array>
-		<string>AC_RELAY_ON</string>
-		<string>AC_RELAY_OFF</string>
-		<string>GET_AC_RELAY_OUT_STATE</string>
-		<string>SOC_VBUS_POWER_ON</string>
-		<string>SOC_VBUS_POWER_OFF</string>
-		<string>GET_SOC_VBUS_POWER_OUT_STATE</string>
-		<string>FORCE_DFU_POWER_ON</string>
-		<string>FORCE_DFU_POWER_OFF</string>
-		<string>GET_FORCE_DFU_PWOER_OUT_STATE</string>
-		<string>DFUMUX_SEL_TO_GND</string>
-		<string>DFUMUX_SEL_FLOAT</string>
-		<string>GET_DFUMUX_SEL_OUT_STATE</string>
-		<string>UUT_POWER_BUTTON_PRESSED</string>
-		<string>UUT_POWER_BUTTON_RELEASE</string>
-		<string>GET_UUT_POWER_BUTTON_OUT_STATE</string>
-		<string>SOC_SOCHOT_L_TO_GND</string>
-		<string>SOC_SOCHOT_L_FLOAT</string>
-		<string>GET_SOC_SOCHOT_L_OUT_STATE</string>
-		<string>ETH_USB_POWER_ON</string>
-		<string>ETH_USB_POWER_OFF</string>
-		<string>GET_ETH_USB_POWER_OUT_STATE</string>
-		<string>SWDL_USB_POWER_ON</string>
-		<string>SWDL_USB_POWER_OFF</string>
-		<string>GET_SWDL_USB_POWER_OUT_STATE</string>
-	</array>
-	<key>ControlBoard_System</key>
-	<array>
-		<string>help</string>
-		<string>ver</string>
-		<string>reset_mcu</string>
-		<string>fw_update_time</string>
-	</array>
-	<key>ControlBoard_IO</key>
-	<array>
-		<string>iic_sw_carbon</string>
-		<string>iic_sw_base</string>
-		<string>ctrl_get_fix_mode</string>
-		<string>get_soc_dfu_sta</string>
-		<string>get_drawer_sta</string>
-		<string>get_uut_sta</string>
-	</array>
-	<key>ControlBoard_ADC</key>
-	<array>
-		<string>get_adc ch</string>
-		<string>auto_report_start</string>
-		<string>auto_report_stop</string>
-		<string>auto_report_once</string>
-	</array>
-	<key>GET_SN</key>
-	<array>
-		<string>GET_SN</string>
-	</array>
-	<key>PowerOn</key>
-	<array>
-		<string>WRITE_PF3=L</string>
-		<string>WRITE_PF5=L</string>
-		<string>WRITE_PB11=H</string>
-		<string>AC_RELAY_ON</string>
-		<string>WRITE_PF6=H</string>
-	</array>
-	<key>PowerOff</key>
-	<array>
-		<string>WRITE_PF6=L</string>
-		<string>AC_RELAY_OFF</string>
-		<string>WRITE_PF5=H</string>
-		<string>WRITE_PF5=L</string>
-		<string>WRITE_PH10=H</string>
-		<string>UUT_POWER_BUTTON_PRESSED</string>
-		<string>WRITE_PH10=L</string>
-		<string>UUT_POWER_BUTTON_RELEASE</string>
-		<string>WRITE_PB11=L</string>
-		<string>WRITE_PF3=H</string>
-		<string>WRITE_PF3=L</string>
-	</array>
-	<key>EnterDFU</key>
+	<key>enterDFU</key>
 	<array>
 		<string>FORCE_DFU_POWER_ON</string>
 		<string>SOC_VBUS_POWER_ON</string>
-		<string>PowerOn()Function</string>
+		<string>POWERON</string>
+		<string>SOC_DFU_STATUS,limit,1.62,1.92</string>
 		<string>FORCE_DFU_POWER_OFF</string>
 	</array>
 </dict>

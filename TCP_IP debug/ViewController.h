@@ -12,11 +12,8 @@
 @interface ViewController : NSViewController <NSComboBoxDelegate,NSComboBoxDataSource>
 {
     Socket *socket;
-    IBOutlet NSTextField *IPAddress;
     
-    IBOutlet NSTextField *portNum;
-    
-    IBOutlet NSTextField *cmd;
+    NSDictionary * commandDic;
     
     IBOutlet NSComboBox *cmdCombox;
     IBOutlet NSPopUpButton *category;
@@ -29,9 +26,7 @@
 }
 @property (nonatomic,strong) NSDictionary *commandListArray;
 
--(IBAction)SendCmd:(id)sender;
--(IBAction)getTCPconnect:(id)sender;
--(IBAction)disTCPconnect:(id)sender;
+//-(IBAction)SendCmd:(id)sender;
 
 @end
 

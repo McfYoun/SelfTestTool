@@ -296,6 +296,64 @@
     
 }
 
+-(NSString *)sendCMDBySocket:(NSString *)cmd WithTime:(NSNumber *)timeout;
+{
+    NSString *readStr = nil;
+    if([self WriteCMDBySocket:cmd] == true){
+        readStr = [self ReadStrBySocketWithTime:timeout];
+    }
+    return readStr;
+}
+
+-(NSString *)ReadStrBySocketWithTime:(NSNumber *)timeout;
+{
+    NSString *bufferString = [[NSString alloc]init];
+    if (!timeout)
+    {
+        // If no timeout value is specified, just set it to 10s.
+        timeout = [NSNumber numberWithInteger:10];
+    }
+    NSTimeInterval timeStart = [[NSDate date] timeIntervalSince1970];
+    do {
+        long wordsRead = 0;
+        char tempRecBuffer[1024] ;
+        memset(tempRecBuffer, 0, 1024);
+        wordsRead = recv(listenSocket,tempRecBuffer,1023,0) ; //received socket data
+        if (wordsRead <= 0) //read available data
+        {
+            [NSThread sleepForTimeInterval:1];
+            continue;
+        }
+        NSString *ReceiveData = [NSString stringWithUTF8String:tempRecBuffer];
+        bufferString = [bufferString stringByAppendingString:ReceiveData];
+    } while (![bufferString containsString:@"\r"] && ([[NSDate date] timeIntervalSince1970] - timeStart) < timeout.doubleValue );
+    return bufferString;
+    
+}
+-(NSString *)ReadStrBySocketWithTime:(NSNumber *)timeout frameTerminator:(NSString *)frameTerminator;
+{
+    NSString *bufferString = [[NSString alloc]init];
+    [NSThread sleepForTimeInterval:0.02];
+    if (!timeout)
+    {
+        timeout = [NSNumber numberWithInteger:10];
+    }
+    NSTimeInterval timeStart = [[NSDate date] timeIntervalSince1970];
+    do {
+        long wordsRead = 0;
+        char tempRecBuffer[1024] ;
+        memset(tempRecBuffer, 0, 1024);
+        wordsRead = recv(listenSocket,tempRecBuffer,1023,0) ; //received socket data
+        if (wordsRead <= 0) //read available data
+        {
+            break;
+        }
+        NSString *ReceiveData = [NSString stringWithUTF8String:tempRecBuffer];
+        bufferString = [bufferString stringByAppendingString:ReceiveData];
+    } while (![bufferString containsString:frameTerminator] && ([[NSDate date] timeIntervalSince1970] - timeStart) < timeout.doubleValue );
+    return bufferString;
+}
+
 -(void)clearSocketBuffer;
 {
     if(listenSocket <= 0) {
