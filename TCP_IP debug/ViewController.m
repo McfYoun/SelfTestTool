@@ -29,10 +29,10 @@
 //    NSLog(@"%@",commandDic);
 //    NSArray * powerOnArr = [commandDic objectForKey:@"powerOn"];
 //    NSLog(@"%@",powerOnArr);
-//    socket1 = [[Socket alloc] init];
-//    socket2 = [[Socket alloc] init];
-//    socket3 = [[Socket alloc] init];
-//    socket4 = [[Socket alloc] init];
+    socket1 = [[Socket alloc] init];
+    socket2 = [[Socket alloc] init];
+    socket3 = [[Socket alloc] init];
+    socket4 = [[Socket alloc] init];
     testItemGroup = dispatch_group_create();
 //    powerOnSelected.state = 0;
 //    powerOffSelected.state = 0;
@@ -47,7 +47,7 @@
     [unit1 setValue:@"hello" forKey:@"command"];
     dispatch_group_async(testItemGroup, dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
         [self startTest:unit1];
-        
+//        [unit1 setValue:socket1 forKey:@"socket"];
     });
 }
 - (IBAction)slot2StartTest:(id)sender {
@@ -79,7 +79,7 @@
     [self logInfo:[NSString stringWithFormat:@"Connecting to carbon 10.0.100.%d1!",unit.slot] unit:unit];
     dispatch_async(dispatch_queue_create("Connection Queue", NULL),
                    ^{
-                       if([socket ConnectSocketIP:address andPort:carbonPort])
+                       if([unit.socket ConnectSocketIP:address andPort:carbonPort])
                        {
                            [self logInfo:@"Opening interface successfully!" unit:unit];
                            connected = YES;
@@ -99,6 +99,7 @@
     [formatter setTimeZone:nil];
     NSString * timestamp = [formatter stringFromDate:[NSDate date]];
     NSString * BPLogpath = [NSString stringWithFormat:@"~/Desktop/BPLog/slot%d/%@_BPLOG",unit.slot,timestamp];
+    [self logInfo:BPLogpath unit:unit];
     [unit setValue:BPLogpath forKey:@"logpath"];
     
     do {
@@ -157,8 +158,20 @@
             [self logError:@"disable i2C errored\n" unit:unit];
             return;
         }
-        [self logInfo:@"disenable Battery errored\n" unit:unit];
+        [self logInfo:@"disenable i2C OK\n" unit:unit];
     } while (0);
+    
+    /*(
+     [SLOT 4]: Connecting to carbon 10.0.100.41!
+     [SLOT 4]: Opening interface successfully!
+     [SLOT 4]: USB20_SWITCH_DEBUG OK
+     [SLOT 4]: enable Battery OK
+     [SLOT 4]: enable I2C OK
+     [SLOT 4]: Battery Voltage is 12.878000,in limit 12.06-13.33
+     [SLOT 4]: disenable Battery OK
+     [SLOT 4]: disenable Battery errored
+     [SLOT 4]: FORCE_BAT_CHGR OK
+     */
     
 //    NSArray * powerOnArr = [commandDic objectForKey:@"powerOn"];
 //    NSArray * powerOffArr = [commandDic objectForKey:@"powerOff"];
@@ -190,36 +203,36 @@
             [self logInfo:@"powerON Successed!" unit:unit];
         }else{
             [self logError:@"powerOn errored" unit:unit];
+            [self tearDown:unit];
+            return;
         }
-        [self tearDown:unit];
-        return;
     }
     if (powerOffSelected.state == 1) {
         if ([self powerOff:unit]) {
             [self logInfo:@"powerOff Successed!" unit:unit];
         }else{
             [self logError:@"powerOff errored" unit:unit];
+            [self tearDown:unit];
+            return;
         }
-        [self tearDown:unit];
-        return;
     }
     if (DFUSelected.state == 1) {
         if ([self enterDFU:unit]) {
             [self logInfo:@"enterDFU Successed!" unit:unit];
         }else{
             [self logError:@"enterDFU errored!" unit:unit];
+            [self tearDown:unit];
+            return;
         }
-        [self tearDown:unit];
-        return;
     }
     if (ADCSelected.state == 1) {
         if ([self measureADC:unit]) {
             [self logInfo:@"measureADC Successed!" unit:unit];
         }else{
             [self logError:@"measureADC errored!" unit:unit];
+            [self tearDown:unit];
+            return;
         }
-        [self tearDown:unit];
-        return;
     }
     
     [self tearDown:unit];
@@ -339,6 +352,7 @@
         if (![cmd containsString:@"limit"])
         {
             oKay = [socket sendCMDBySocket:cmd WithTime:@5];
+            
             if ([oKay containsString:@"OK"]) {
                 [self logInfo:oKay unit:unit];
             }else{
@@ -347,6 +361,8 @@
                 powerOnPass = FALSE;
                 return FALSE;
             }
+            [NSThread sleepForTimeInterval:1];
+            continue;
         }
         NSArray * cmdArr = [cmd componentsSeparatedByString:@","];
         if (!(cmdArr.count > 2)) {
@@ -357,7 +373,7 @@
         while ([[NSDate date] timeIntervalSinceDate:timeout] < 0) {
             volCheck = [self getADCValueBySignal:cmdArr[0] unit:unit];
             if ([cmd containsString:@"+"]) {
-                if (volCheck.doubleValue > [cmdArr[2] doubleValue]) {
+                if (volCheck.doubleValue >= [cmdArr[2] doubleValue]) {
                     [self logInfo:[NSString stringWithFormat:@"%@ value is %@ in limit[value > %@]",cmdArr[0],volCheck,cmdArr[2]] unit:unit];
                     break;
                 }else{
@@ -366,7 +382,7 @@
                     powerOnPass = FALSE;
                 }
             }else{
-                if ((volCheck.doubleValue > [cmdArr[2] doubleValue]) && (volCheck.doubleValue < [cmdArr[3] doubleValue])) {
+                if ((volCheck.doubleValue >= [cmdArr[2] doubleValue]) && (volCheck.doubleValue < [cmdArr[3] doubleValue])) {
                     [self logInfo:[NSString stringWithFormat:@"%@ value is %@ in limit[%@-%@]",cmdArr[0],volCheck,cmdArr[2],cmdArr[3]] unit:unit];
                     break;
                 }else{
@@ -408,6 +424,8 @@
                 powerOffPass = FALSE;
                 return FALSE;
             }
+            [NSThread sleepForTimeInterval:1];
+            continue;
         }
         NSArray * cmdArr = [cmd componentsSeparatedByString:@","];
         if (!(cmdArr.count > 2)) {
@@ -418,7 +436,7 @@
         while ([[NSDate date] timeIntervalSinceDate:timeout] < 0) {
             volCheck = [self getADCValueBySignal:cmdArr[0] unit:unit];
             if ([cmd containsString:@"+"]) {
-                if (volCheck.doubleValue > [cmdArr[2] doubleValue]) {
+                if (volCheck.doubleValue >= [cmdArr[2] doubleValue]) {
                     [self logInfo:[NSString stringWithFormat:@"%@ value is %@ in limit[value > %@]",cmdArr[0],volCheck,cmdArr[2]] unit:unit];
                     break;
                 }else{
@@ -427,7 +445,7 @@
                     powerOffPass = FALSE;
                 }
             }else{
-                if ((volCheck.doubleValue > [cmdArr[2] doubleValue]) && (volCheck.doubleValue < [cmdArr[3] doubleValue])) {
+                if ((volCheck.doubleValue >= [cmdArr[2] doubleValue]) && (volCheck.doubleValue < [cmdArr[3] doubleValue])) {
                     [self logInfo:[NSString stringWithFormat:@"%@ value is %@ in limit[%@-%@]",cmdArr[0],volCheck,cmdArr[2],cmdArr[3]] unit:unit];
                     break;
                 }else{
@@ -474,6 +492,8 @@
                 enterDFUPass = FALSE;
                 return FALSE;
             }
+            [NSThread sleepForTimeInterval:1];
+            continue;
         }
         NSArray * cmdArr = [cmd componentsSeparatedByString:@","];
         if (!(cmdArr.count > 2)) {
@@ -484,7 +504,7 @@
         while ([[NSDate date] timeIntervalSinceDate:timeout] < 0) {
             volCheck = [self getADCValueBySignal:cmdArr[0] unit:unit];
             if ([cmd containsString:@"+"]) {
-                if (volCheck.doubleValue > [cmdArr[2] doubleValue]) {
+                if (volCheck.doubleValue >= [cmdArr[2] doubleValue]) {
                     [self logInfo:[NSString stringWithFormat:@"%@ value is %@ in limit[value > %@]",cmdArr[0],volCheck,cmdArr[2]] unit:unit];
                     break;
                 }else{
@@ -493,7 +513,7 @@
                     enterDFUPass = FALSE;
                 }
             }else{
-                if ((volCheck.doubleValue > [cmdArr[2] doubleValue]) && (volCheck.doubleValue < [cmdArr[3] doubleValue])) {
+                if ((volCheck.doubleValue >= [cmdArr[2] doubleValue]) && (volCheck.doubleValue < [cmdArr[3] doubleValue])) {
                     [self logInfo:[NSString stringWithFormat:@"%@ value is %@ in limit[%@-%@]",cmdArr[0],volCheck,cmdArr[2],cmdArr[3]] unit:unit];
                     break;
                 }else{
