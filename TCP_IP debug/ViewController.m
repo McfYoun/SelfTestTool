@@ -46,25 +46,28 @@
     Unit * unit1 = [[Unit alloc] initWithContext:@{@"slotId":@"1"}];
     [unit1 setValue:@"hello" forKey:@"command"];
     dispatch_group_async(testItemGroup, dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+        [unit1 setValue:socket1 forKey:@"socket"];
         [self startTest:unit1];
-//        [unit1 setValue:socket1 forKey:@"socket"];
     });
 }
 - (IBAction)slot2StartTest:(id)sender {
     Unit * unit2 = [[Unit alloc] initWithContext:@{@"slotId":@"2"}];
     dispatch_group_async(testItemGroup, dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+        [unit2 setValue:socket2 forKey:@"socket"];
         [self startTest:unit2];
     });
 }
 - (IBAction)slot3StartTest:(id)sender {
     Unit * unit3 = [[Unit alloc] initWithContext:@{@"slotId":@"3"}];
     dispatch_group_async(testItemGroup, dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+        [unit3 setValue:socket3 forKey:@"socket"];
         [self startTest:unit3];
     });
 }
 - (IBAction)slot4StartTest:(id)sender {
     Unit * unit4 = [[Unit alloc] initWithContext:@{@"slotId":@"4"}];
     dispatch_group_async(testItemGroup, dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+        [unit4 setValue:socket4 forKey:@"socket"];
         [self startTest:unit4];
     });
 }
@@ -98,13 +101,13 @@
     [formatter setDateFormat:@"yyyy-MM-dd HH-mm-ss"];
     [formatter setTimeZone:nil];
     NSString * timestamp = [formatter stringFromDate:[NSDate date]];
-    NSString * BPLogpath = [NSString stringWithFormat:@"~/Desktop/BPLog/slot%d/%@_BPLOG",unit.slot,timestamp];
+    NSString * BPLogpath = [NSString stringWithFormat:@"/Users/gdlocal/Desktop/BPLog/slot%d/%@_BPLOG",unit.slot,timestamp];
     [self logInfo:BPLogpath unit:unit];
     [unit setValue:BPLogpath forKey:@"logpath"];
     
     do {
         NSString * cmd = @"USB20_SWITCH_DEBUG";
-        NSString * oKay = [socket sendCMDBySocket:cmd WithTime:@5];
+        NSString * oKay = [unit.socket sendCMDBySocket:cmd WithTime:@5];
         if (![oKay containsString:@"OK"])
         {
             [self logError:@"USB20_SWITCH_DEBUG errored" unit:unit];
@@ -112,14 +115,14 @@
             [self logInfo:@"USB20_SWITCH_DEBUG OK" unit:unit];
         }
         cmd = @"IIC_BATT_SWITCH_DIS";
-        oKay = [socket sendCMDBySocket:cmd WithTime:@5];
+        oKay = [unit.socket sendCMDBySocket:cmd WithTime:@5];
     } while (0);
     
     
     //check BatteryVoltageCheck
     do {
         NSString * cmd = @"FORCE_BAT_EN";
-        NSString * oKay = [socket sendCMDBySocket:cmd WithTime:@5];
+        NSString * oKay = [unit.socket sendCMDBySocket:cmd WithTime:@5];
         if (![oKay containsString:@"OK"])
         {
             [self logError:@"enable Battery errored\n" unit:unit];
@@ -128,7 +131,7 @@
         [self logInfo:@"enable Battery OK" unit:unit];
         [NSThread sleepForTimeInterval:1];
         cmd = @"IIC_BATT1_SWITCH_EN";
-        oKay = [socket sendCMDBySocket:cmd WithTime:@5];
+        oKay = [unit.socket sendCMDBySocket:cmd WithTime:@5];
         if (![oKay containsString:@"OK"])
         {
             [self logError:@"enable I2C errored\n" unit:unit];
@@ -143,7 +146,7 @@
         }
         
         cmd = @"MLB_EN_BAT";
-        oKay = [socket sendCMDBySocket:cmd WithTime:@5];
+        oKay = [unit.socket sendCMDBySocket:cmd WithTime:@5];
         if (![oKay containsString:@"OK"])
         {
             [self logError:@"disenable Battery errored\n" unit:unit];
@@ -152,7 +155,7 @@
         [self logInfo:@"disenable Battery OK\n" unit:unit];
         [NSThread sleepForTimeInterval:0.5];
         cmd = @"IIC_BATT1_SWITCH_DIS";
-        oKay = [socket sendCMDBySocket:cmd WithTime:@5];
+        oKay = [unit.socket sendCMDBySocket:cmd WithTime:@5];
         if (![oKay containsString:@"OK"])
         {
             [self logError:@"disable i2C errored\n" unit:unit];
@@ -188,6 +191,14 @@
 //
 //        };
 //    }
+    /*
+     __block BOOL stateOK = FALSE;
+     dispatch_async(dispatch_get_main_queue(), ^{
+     if (panda.state == 1){
+     stateOK = TRUE;
+     }
+     });
+     */
     
     if (panda.state == 1) {
         if ([self setPanda:unit]) {
@@ -242,7 +253,7 @@
 - (BOOL)tearDown:(Unit *)unit
 {
     BOOL tearDownOK = TRUE;
-    if (![socket DisconnectBySocket])
+    if (![unit.socket DisconnectBySocket])
     {
         [self logError:@"Error closing carbon interface on teardown." unit:unit];
         tearDownOK = FALSE;
@@ -264,7 +275,7 @@
     NSDate *timeout = [NSDate dateWithTimeIntervalSinceNow:5];
     while ([[NSDate date] timeIntervalSinceDate:timeout] < 0 ) {
         [NSThread sleepForTimeInterval:1];
-        oKay = [socket sendCMDBySocket:CMD WithTime:@5];
+        oKay = [unit.socket sendCMDBySocket:CMD WithTime:@5];
         if ([oKay containsString:@"Fail"] || [oKay containsString:@"ERROR"]) {
             continue;
         }
@@ -292,7 +303,7 @@
 //    NSString * cmd = [[NSString alloc] init];
 //    NSString * readback = [[NSString alloc] init];
 //
-//    readback = [socket sendCMDBySocket:@"IIC_PWR_SWITCH_EN" WithTime:@5];
+//    readback = [unit.socket sendCMDBySocket:@"IIC_PWR_SWITCH_EN" WithTime:@5];
 //    if (![readback containsString:@"OK"]) {
 //        [self logError:@"IIC_PWR_SWITCH_EN set errored" unit:unit];
 //    }else{
@@ -301,7 +312,7 @@
 //    [NSThread sleepForTimeInterval:0.2];
 //
 //    cmd = [NSString stringWithFormat:@"IIC_PANDA_WR_DATA %@",v1];
-//    readback = [socket sendCMDBySocket:cmd WithTime:@5];
+//    readback = [unit.socket sendCMDBySocket:cmd WithTime:@5];
 //    if ([readback containsString:@"OK"]) {
 //        [self logInfo:@"setPanda value:%@ successed" unit:unit];
 //        [unit setCode:0];
@@ -313,7 +324,7 @@
 //    }
 //
 //    cmd = [NSString stringWithFormat:@"IIC_PANDA_WR_DATA %@",v1];
-//    readback = [socket sendCMDBySocket:cmd WithTime:@5];
+//    readback = [unit.socket sendCMDBySocket:cmd WithTime:@5];
 //    if ([readback containsString:@"OK"]) {
 //        [self logInfo:@"setPanda value:%@ successed" unit:unit];
 //        [unit setCode:0];
@@ -324,7 +335,7 @@
 //        pandaOK = FALSE;
 //    }
 //    //IIC_PANDA_RD_DATA
-//    readback = [socket sendCMDBySocket:@"IIC_PANDA_RD_DATA" WithTime:@5];
+//    readback = [unit.socket sendCMDBySocket:@"IIC_PANDA_RD_DATA" WithTime:@5];
 //    if ([readback containsString:@"OK"]) {
 //        [self logInfo:@"readPanda value:%@ successed" unit:unit];
 //        [unit setCode:0];
@@ -351,7 +362,7 @@
         }
         if (![cmd containsString:@"limit"])
         {
-            oKay = [socket sendCMDBySocket:cmd WithTime:@5];
+            oKay = [unit.socket sendCMDBySocket:cmd WithTime:@5];
             
             if ([oKay containsString:@"OK"]) {
                 [self logInfo:oKay unit:unit];
@@ -391,6 +402,7 @@
                     powerOnPass = FALSE;
                 }
             }
+            [NSThread sleepForTimeInterval:1];
         }
         [NSThread sleepForTimeInterval:1];
     }
@@ -415,7 +427,7 @@
         }
         if (![cmd containsString:@"limit"])
         {
-            oKay = [socket sendCMDBySocket:cmd WithTime:@5];
+            oKay = [unit.socket sendCMDBySocket:cmd WithTime:@5];
             if ([oKay containsString:@"OK"]) {
                 [self logInfo:oKay unit:unit];
             }else{
@@ -454,6 +466,7 @@
                     powerOffPass = FALSE;
                 }
             }
+            [NSThread sleepForTimeInterval:1];
         }
         [NSThread sleepForTimeInterval:1];
     }
@@ -483,7 +496,7 @@
         }
         if (![cmd containsString:@"limit"])
         {
-            oKay = [socket sendCMDBySocket:cmd WithTime:@5];
+            oKay = [unit.socket sendCMDBySocket:cmd WithTime:@5];
             if ([oKay containsString:@"OK"]) {
                 [self logInfo:oKay unit:unit];
             }else{
@@ -522,6 +535,7 @@
                     enterDFUPass = FALSE;
                 }
             }
+            [NSThread sleepForTimeInterval:1];
         }
         [NSThread sleepForTimeInterval:1];
     }
@@ -543,7 +557,7 @@
         NSDate * timeout = [NSDate dateWithTimeIntervalSinceNow:5];
         while ([[NSDate date] timeIntervalSinceDate:timeout] < 0) {
             volCheck = [self getADCValueBySignal:cmd unit:unit];
-                if ((volCheck.doubleValue > 1.75) && (volCheck.doubleValue < 1.85)) {
+                if ((volCheck.doubleValue >= 0) && (volCheck.doubleValue < 1.85)) {
                     [self logInfo:[NSString stringWithFormat:@"%@ value is %@ in limit[1.75-1.85]",cmd,volCheck] unit:unit];
                     break;
                 }else{
@@ -551,6 +565,7 @@
                     [unit setCode:-1227];
                     ADCPass = FALSE;
                 }
+            [NSThread sleepForTimeInterval:1];
         }
         [NSThread sleepForTimeInterval:1];
     }
@@ -575,13 +590,15 @@
     NSString * response = [[NSString alloc]init];
     BOOL didTimeout = NO;
     
-    if([socket WriteCMDBySocket:command] == true){
-        response = [socket ReadStrBySocketWithTime:timeout frameTerminator:frameTerminator];
+    if([unit.socket WriteCMDBySocket:command] == true){
+        response = [unit.socket ReadStrBySocketWithTime:timeout frameTerminator:frameTerminator];
     }
+    NSLog(@"-------%@",response);
     if (![[response uppercaseString] containsString:@"CHL"]) {
-        NSString *string = [socket ReadStrBySocketWithTime:timeout frameTerminator:frameTerminator];
+        NSString *string = [unit.socket ReadStrBySocketWithTime:timeout frameTerminator:frameTerminator];
         response = [response stringByAppendingString:string];
     }
+    
     if (didTimeout)
     {
         [self logError:@"Error:  UART (%@) command '%@' timeout!\n" unit:unit];
@@ -707,23 +724,29 @@ uint8_t CarbonADCChannelForSignal(NSString* signal)
 
 - (void)Writelog:(NSString *)str unit:(Unit *)unit
 {
-    
     NSDateFormatter * formatter = [NSDateFormatter new];
-    [formatter setDateFormat:@"yyyy-MM-dd HH:mm:ss "];
+    [formatter setDateFormat:@"yyyy-MM-dd HH-mm-ss"];
     [formatter setTimeZone:nil];
     NSString * timestamp = [formatter stringFromDate:[NSDate date]];
-    NSString * timeStamppedString = [NSString stringWithFormat:@"%@%@\n",timestamp,str];
-
+    NSString * timeStamppedString = [NSString stringWithFormat:@"%@%@",timestamp,str];
+//    NSString * LOGPATH = [[NSString alloc] initWithFormat:@"/%@_BPLog",timestamp];
     NSFileHandle * fh;
-
-    if (![[NSFileManager defaultManager] fileExistsAtPath:unit.logpath])
+    NSFileManager * fm = [NSFileManager defaultManager];
+    BOOL ret = [fm fileExistsAtPath:unit.logpath];
+    if (!ret) {
+        BOOL makeFile = [fm createDirectoryAtPath:[NSString stringWithFormat:@"/Users/gdlocal/Desktop/BPLog/slot%d",unit.slot] withIntermediateDirectories:YES attributes:nil error:nil];
+        if (makeFile) {
+            //                NSLog(@"create directory successed");
+        }
+    }
+    ret = [fm fileExistsAtPath:unit.logpath];
+    if (!ret)
     {
-        BOOL makeFile = [[NSFileManager defaultManager] createFileAtPath:unit.logpath contents:nil attributes:nil];
+        BOOL makeFile = [fm createFileAtPath:unit.logpath contents:nil attributes:nil];
         if (makeFile) {
             //            NSLog(@"create success");
         }
     }
-
     fh = [NSFileHandle fileHandleForWritingAtPath:unit.logpath];
     //    [fh seekToFileOffset:0];
     [fh seekToEndOfFile];
@@ -758,7 +781,6 @@ uint8_t CarbonADCChannelForSignal(NSString* signal)
         [[LogView textStorage] appendAttributedString:as];
         [self scrollToBottom];
     });
-
 }
 - (void)scrollToBottom
 {
