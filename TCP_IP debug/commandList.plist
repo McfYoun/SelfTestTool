@@ -8,7 +8,7 @@
 		<string>IIC_BATT_SWITCH_DIS</string>
 		<string>FORCE_BAT_EN</string>
 		<string>IIC_BATT1_SWITCH_EN</string>
-		<string>IIC_BATT1_READ_VOL,limit,12.06,13.33</string>
+		<string>IIC_BATT1_READ_VOL,limit,0,13.33</string>
 		<string>MLB_EN_BAT</string>
 		<string>IIC_BATT1_SWITCH_DIS</string>
 	</array>
@@ -22,15 +22,15 @@
 		<string>USB20_SWITCH_DEBUG</string>
 		<string>BAT_POWER_ON</string>
 		<string>FORCE_BAT_EN</string>
-		<string>PP3V3_G3H,limit,3,+</string>
-		<string>SYS_DETECT,limit,3,+</string>
+		<string>PP3V3_G3H,limit,0,+</string>
+		<string>SYS_DETECT,limit,0,+</string>
 		<string>MLB_EN_BAT</string>
 		<string>DC_POWER_ON</string>
 		<string>POS_VBUS_TO_PP20V_XA_VBUS</string>
 		<string>USB20_SWITCH_POS</string>
-		<string>PMU_SYS_ALIVE,limit,1,+</string>
-		<string>PMU_ACTIVE_READY,limit,1,+</string>
-		<string>PPVDDCPU_AWAKE,limit,0.5,+</string>
+		<string>PMU_SYS_ALIVE,limit,0,+</string>
+		<string>PMU_ACTIVE_READY,limit,0,+</string>
+		<string>PPVDDCPU_AWAKE,limit,0,+</string>
 	</array>
 	<key>powerOff</key>
 	<array>
@@ -43,9 +43,7 @@
 		<string>PPDCIN_G3H,limit,0,1</string>
 		<string>PP20V_XA_VBUS_NATURE_DIS_CHGR</string>
 		<string>PMU_RSLOC_RST_L_RESET_HOLD</string>
-		<string>sleep,5</string>
 		<string>PMU_ONOFF_R_L_RESET_HOLD</string>
-		<string>sleep,5</string>
 		<string>BAT_POWER_OFF</string>
 		<string>PMU_RSLOC_RST_L_RELEASE</string>
 		<string>PMU_ONOFF_R_L_RELEASE</string>
@@ -66,7 +64,7 @@
 		<string>FORCE_DFU_POWER_ON</string>
 		<string>SOC_VBUS_POWER_ON</string>
 		<string>POWERON</string>
-		<string>SOC_DFU_STATUS,limit,1.62,1.92</string>
+		<string>SOC_DFU_STATUS,limit,0,1.92</string>
 		<string>FORCE_DFU_POWER_OFF</string>
 	</array>
 	<key>measureADC</key>
@@ -83,7 +81,6 @@
 		<string>PP1V8_SSD0</string>
 		<string>PP0V9_SSD0</string>
 		<string>PP2V7_NAND_SSD0</string>
-		<string>PP1V8_G3S</string>
 		<string>SSD_PMU_RESET_L</string>
 		<string>PMU_COLD_RESET_L</string>
 		<string>PPDCIN_G3H</string>

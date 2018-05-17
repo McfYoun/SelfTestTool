@@ -30,6 +30,7 @@
 @property (readonly) int slot;
 @property (readonly) NSString * command;
 @property (readonly) NSString * logpath;
+@property (readonly) NSString * pandaValue;
 @property (readonly) NSDictionary * parameters;
 @property (nonatomic) Socket * socket;
 
