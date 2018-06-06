@@ -53,6 +53,14 @@
 }
 
 //SET_IP_ADDR 10.0.100.11$
+- (IBAction)debugClick:(id)sender {
+    
+}
+
+- (IBAction)nomalClick:(id)sender {
+    
+}
+
 
 -(IBAction)getTCPconnect:(id)sender;
 {

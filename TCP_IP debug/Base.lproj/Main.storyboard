@@ -759,7 +759,7 @@
                             <button verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="oo3-QT-5yf">
                                 <rect key="frame" x="409" y="411" width="92" height="32"/>
                                 <autoresizingMask key="autoresizingMask"/>
-                                <buttonCell key="cell" type="push" title="Connect" bezelStyle="rounded" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="BMK-Zd-1vS">
+                                <buttonCell key="cell" type="push" title="Connect" bezelStyle="rounded" alignment="center" borderStyle="border" imageScaling="proportionallyDown" sound="Pop" inset="2" id="BMK-Zd-1vS">
                                     <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                                     <font key="font" metaFont="system"/>
                                 </buttonCell>
@@ -770,7 +770,7 @@
                             <button verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="QiB-Sy-VJh">
                                 <rect key="frame" x="525" y="368" width="96" height="32"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                                <buttonCell key="cell" type="push" title="Send" bezelStyle="rounded" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="Sww-SY-U5P">
+                                <buttonCell key="cell" type="push" title="Send" bezelStyle="rounded" alignment="center" borderStyle="border" imageScaling="proportionallyDown" sound="Pop" inset="2" id="Sww-SY-U5P">
                                     <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                                     <font key="font" metaFont="system"/>
                                     <string key="keyEquivalent" base64-UTF8="YES">
@@ -784,7 +784,7 @@ DQ
                             <button verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="Sj3-1F-rEo">
                                 <rect key="frame" x="237" y="336" width="96" height="32"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                                <buttonCell key="cell" type="push" title="SETIP" bezelStyle="rounded" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="OMd-5d-Wat">
+                                <buttonCell key="cell" type="push" title="SETIP" bezelStyle="rounded" alignment="center" borderStyle="border" imageScaling="proportionallyDown" sound="Pop" inset="2" id="OMd-5d-Wat">
                                     <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                                     <font key="font" metaFont="system"/>
                                     <string key="keyEquivalent" base64-UTF8="YES">
@@ -798,7 +798,7 @@ DQ
                             <button verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="CaY-fH-9Ax">
                                 <rect key="frame" x="525" y="411" width="96" height="32"/>
                                 <autoresizingMask key="autoresizingMask"/>
-                                <buttonCell key="cell" type="push" title="Disconnect" bezelStyle="rounded" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="Nyc-6h-ca4">
+                                <buttonCell key="cell" type="push" title="Disconnect" bezelStyle="rounded" alignment="center" borderStyle="border" imageScaling="proportionallyDown" sound="Pop" inset="2" id="Nyc-6h-ca4">
                                     <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                                     <font key="font" metaFont="system"/>
                                 </buttonCell>
@@ -806,39 +806,6 @@ DQ
                                     <action selector="disTCPconnect:" target="XfG-lQ-9wD" id="VPf-f3-Xkg"/>
                                 </connections>
                             </button>
-                            <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="d41-wm-Nsm">
-                                <rect key="frame" x="14" y="380" width="33" height="17"/>
-                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                                <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="Cate" id="iHU-ja-ajB">
-                                    <font key="font" metaFont="system"/>
-                                    <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
-                                    <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
-                                </textFieldCell>
-                            </textField>
-                            <popUpButton verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="NWj-jB-d8o">
-                                <rect key="frame" x="46" y="374" width="192" height="26"/>
-                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                                <popUpButtonCell key="cell" type="push" title="Carbon_System" bezelStyle="rounded" alignment="left" lineBreakMode="truncatingTail" state="on" borderStyle="borderAndBezel" imageScaling="proportionallyDown" inset="2" selectedItem="YeF-SA-7Lm" id="WTo-iO-FNs">
-                                    <behavior key="behavior" lightByBackground="YES" lightByGray="YES"/>
-                                    <font key="font" metaFont="menu"/>
-                                    <menu key="menu" id="4MG-ZT-YHe">
-                                        <items>
-                                            <menuItem title="Carbon_System" state="on" id="YeF-SA-7Lm" userLabel="Carbon_System"/>
-                                            <menuItem title="Carbon_Get Sta" id="Isd-A3-bjK"/>
-                                            <menuItem title="Carbon_LED" id="dZQ-VC-zAk" userLabel="Carbon_LED"/>
-                                            <menuItem title="Carbon_Draw Ctrl" id="b0L-bk-jMS" userLabel="Carbon_Draw Ctrl"/>
-                                            <menuItem title="Carbon Power" id="GOp-Zz-8cJ" userLabel="Carbon Power"/>
-                                            <menuItem title="ControlBoard_System" id="s4a-Q5-h1D" userLabel="ControlBoard_System"/>
-                                            <menuItem title="ControlBoard_IO" id="Bjh-81-2Bg" userLabel="ControlBoard_IO"/>
-                                            <menuItem title="ControlBoard_ADC" id="dIF-82-c9b" userLabel="ControlBoard_ADC"/>
-                                            <menuItem title="GET_SN" id="GfR-vY-XfE" userLabel="GET_SN"/>
-                                            <menuItem title="PowerOn" id="uPy-9G-C5h"/>
-                                            <menuItem title="PowerOff" id="9fE-gE-36x"/>
-                                            <menuItem title="EnterDFU" id="uZf-GS-hrt" userLabel="EnterDFU"/>
-                                        </items>
-                                    </menu>
-                                </popUpButtonCell>
-                            </popUpButton>
                             <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="diF-y3-tGR">
                                 <rect key="frame" x="246" y="379" width="33" height="17"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
@@ -907,7 +874,7 @@ DQ
                             <button verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="k2L-Dg-pme">
                                 <rect key="frame" x="526" y="336" width="96" height="32"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                                <buttonCell key="cell" type="push" title="Yield" bezelStyle="rounded" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="mgY-OQ-BQ7">
+                                <buttonCell key="cell" type="push" title="Yield" bezelStyle="rounded" alignment="center" borderStyle="border" imageScaling="proportionallyDown" sound="Pop" inset="2" id="mgY-OQ-BQ7">
                                     <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                                     <font key="font" metaFont="system"/>
                                     <string key="keyEquivalent" base64-UTF8="YES">
@@ -927,6 +894,28 @@ DQ
                                     <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
                                 </textFieldCell>
                             </textField>
+                            <button verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="kOb-BP-uDw">
+                                <rect key="frame" x="42" y="368" width="85" height="32"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                <buttonCell key="cell" type="push" title="DEBUG" bezelStyle="rounded" imagePosition="overlaps" alignment="center" borderStyle="border" imageScaling="proportionallyDown" sound="Pop" inset="2" id="izt-ZE-193">
+                                    <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
+                                    <font key="font" metaFont="system"/>
+                                </buttonCell>
+                                <connections>
+                                    <action selector="debugClick:" target="XfG-lQ-9wD" id="DfX-B8-0KP"/>
+                                </connections>
+                            </button>
+                            <button verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="F3t-If-Cyh">
+                                <rect key="frame" x="154" y="368" width="87" height="32"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                <buttonCell key="cell" type="push" title="NOMAL" bezelStyle="rounded" alignment="center" borderStyle="border" imageScaling="proportionallyDown" sound="Pop" inset="2" id="0qH-gq-WJ7">
+                                    <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
+                                    <font key="font" metaFont="system"/>
+                                </buttonCell>
+                                <connections>
+                                    <action selector="nomalClick:" target="XfG-lQ-9wD" id="XE8-eB-Ya5"/>
+                                </connections>
+                            </button>
                         </subviews>
                     </view>
                     <connections>
@@ -936,7 +925,6 @@ DQ
                         <outlet property="Send" destination="QiB-Sy-VJh" id="AR7-pL-xgi"/>
                         <outlet property="SetIPTextField" destination="Vyc-DO-DsR" id="qyT-vs-jIL"/>
                         <outlet property="YieldTextField" destination="swu-mP-rf1" id="pv0-fo-u8f"/>
-                        <outlet property="category" destination="NWj-jB-d8o" id="NLz-Wq-btr"/>
                         <outlet property="cmdCombox" destination="diW-j9-fwT" id="Ym3-L3-CDE"/>
                         <outlet property="connect" destination="oo3-QT-5yf" id="WTc-Ds-BMV"/>
                         <outlet property="portNum" destination="Yze-Jq-SxV" id="ofj-L4-fSu"/>
@@ -947,4 +935,7 @@ DQ
             <point key="canvasLocation" x="-17.5" y="863"/>
         </scene>
     </scenes>
+    <resources>
+        <sound name="Pop"/>
+    </resources>
 </document>
