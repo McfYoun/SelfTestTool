@@ -40,10 +40,11 @@
     socket3 = [[Socket alloc] init];
     socket4 = [[Socket alloc] init];
     testItemGroup = dispatch_group_create();
-//    powerOnSelected.state = 0;
+    powerOnSelected.state = 0;
+    powerOffSelected.state = 0;
     DFUSelected.state = 0;
     PCHSelected.state = 0;
-//    panda.state = 0;
+    panda.state = 0;
     ADCSelected.state = 0;
 }
 
